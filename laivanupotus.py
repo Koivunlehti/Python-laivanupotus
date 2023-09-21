@@ -63,7 +63,10 @@ def peli():
                     y = int(vastustajan_kentta_y / len(vastustajan_laivat))
                     print(f"vastustajan x: {x}, y: {y}")
                     if vastustajan_laivat[y][x] == 1:
+                        vastustajan_laivat[y][x] = 2
                         print("Osuma")
+                        if tarkista_voitto(vastustajan_laivat):
+                            print("voitto!!!")
                     if vastustajan_laivat[y][x] == 0:
                         vastustajan_laivat[y][x] = -1
                         print("Huti")
@@ -110,17 +113,26 @@ def piirra_pelialue(laivataulukko:list, pelialue_koko:tuple=(400,400), pelialue_
                 pygame.draw.rect(pelialue, (100,0,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
             if arvo == 1:
                 pygame.draw.rect(pelialue, (0,100,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
+            if arvo == 2:
+                pygame.draw.rect(pelialue, (226,138,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
             
     return pelialue
 
 def aseta_laivat(laivataulukko):
     for i in range(10):
         while True:
-            y = random.randint(0,len(laivataulukko)-1)
-            x = random.randint(0,len(laivataulukko[0])-1)
+            y = random.randint(0, len(laivataulukko) -1)
+            x = random.randint(0, len(laivataulukko[0]) -1)
             if laivataulukko[y][x] == 0:
                 laivataulukko[y][x] = 1
                 break
+
+def tarkista_voitto(laivataulukko):
+    voitto = True
+    for i in range(len(laivataulukko)):
+        if 1 in laivataulukko[i]:
+            voitto = False
+    return voitto
 
 if __name__ == "__main__":
     peli()
