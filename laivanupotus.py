@@ -1,5 +1,5 @@
 import pygame
-
+import random
 def peli():
     pygame.init()
 
@@ -18,14 +18,8 @@ def peli():
     pelialue_koko = (400,400)
     pelialue_vari = (0,162,232)
 
-    pelaajan_kentta = pygame.Surface(pelialue_koko, pygame.SRCALPHA)
-    pelaajan_kentta.fill(pelialue_vari)
-    pelaajan_kentta = viivoita_pelialue(pelaajan_kentta,len(pelaajan_laivat),len(pelaajan_laivat[0]))
-
-    vastustajan_kentta =  pygame.Surface(pelialue_koko, pygame.SRCALPHA)
-    vastustajan_kentta.fill(pelialue_vari)
-    vastustajan_kentta = viivoita_pelialue(vastustajan_kentta,len(vastustajan_laivat),len(vastustajan_laivat[0]))
-
+    pelaajan_kentta = piirra_pelialue(pelaajan_laivat, pelialue_koko, pelialue_vari)
+    vastustajan_kentta = piirra_pelialue(vastustajan_laivat, pelialue_koko, pelialue_vari)
 
     # Pelisilmukka alkaa
     while True:
@@ -47,27 +41,43 @@ def peli():
         # Seuraava frame
         kello.tick(60)
 
-
-
 def laivataulukon_alustus(ruutu_maara_y:int, ruutu_maara_x:int) -> list:
     ruudukko = []
     for i in range(ruutu_maara_y):
         rivi = []
         for j in range(ruutu_maara_x):
             rivi.append(0)
+            #rivi.append(random.randint(-1,1))
         ruudukko.append(rivi)
-        #print(rivi)
-    #print("--------------------")
     return ruudukko
 
-def viivoita_pelialue(pelialue:pygame.Surface,ruutu_maara_y,ruutu_maara_x):
+def piirra_pelialue(laivataulukko:list, pelialue_koko:tuple=(400,400), pelialue_vari:tuple=(0,162,232) ) -> pygame.Surface:
+    # Luodaan pelialue
+    pelialue = pygame.Surface(pelialue_koko, pygame.SRCALPHA)
+    pelialue.fill(pelialue_vari)
+
+    ruutu_maara_y = len(laivataulukko)
+    ruutu_maara_x = len(laivataulukko[0])
     ruutu_korkeus = pelialue.get_height() / ruutu_maara_y
     ruutu_leveys = pelialue.get_width() / ruutu_maara_x
 
+    # Piirra pelialueen ruudukko
     for i in range(ruutu_maara_y):
-        viiva = pygame.draw.line(pelialue,(0,0,0),(0, i * ruutu_korkeus),(pelialue.get_width(), i * ruutu_korkeus))
+        viiva = pygame.draw.line(pelialue, (0,0,0), (0, i * ruutu_korkeus), (pelialue.get_width(), i * ruutu_korkeus))
     for i in range(ruutu_maara_x):
-        viiva = pygame.draw.line(pelialue,(0,0,0),(i * ruutu_leveys, 0),(i * ruutu_leveys, pelialue.get_width()))
+        viiva = pygame.draw.line(pelialue, (0,0,0), (i * ruutu_leveys, 0), (i * ruutu_leveys, pelialue.get_width()))
+    
+    # Päivitetään pelialue laivataulukon mukaan
+    for i in range(ruutu_maara_y):
+        for j in range(ruutu_maara_x):
+            arvo = laivataulukko[i][j]
+            if arvo == 0:
+                pass
+            if arvo == -1:
+                pygame.draw.rect(pelialue, (100,0,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
+            if arvo == 1:
+                pygame.draw.rect(pelialue, (0,100,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
+            
     return pelialue
 
 if __name__ == "__main__":
