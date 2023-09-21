@@ -1,5 +1,6 @@
 import pygame
 import random
+
 def peli():
     pygame.init()
 
@@ -13,18 +14,25 @@ def peli():
     # Pelin alustus
     pelaajan_laivat = laivataulukon_alustus(20,20)
     vastustajan_laivat = laivataulukon_alustus(20,20)
+    aseta_laivat(pelaajan_laivat)
+    aseta_laivat(vastustajan_laivat)
 
     marginaali = 20
     pelialue_koko = (400,400)
     pelialue_vari = (0,162,232)
 
-    pelaajan_kentta = piirra_pelialue(pelaajan_laivat, pelialue_koko, pelialue_vari)
-    vastustajan_kentta = piirra_pelialue(vastustajan_laivat, pelialue_koko, pelialue_vari)
-
     # Pelisilmukka alkaa
     while True:
         # Näytön tyhjennys
         naytto.fill((0, 0, 0))
+
+        hiiri_x, hiiri_y = pygame.mouse.get_pos()
+
+        pelaajan_kentta = piirra_pelialue(pelaajan_laivat, pelialue_koko, pelialue_vari)
+        vastustajan_kentta = piirra_pelialue(vastustajan_laivat, pelialue_koko, pelialue_vari)
+        pelaajan_kentta = naytto.blit(pelaajan_kentta,(marginaali, naytto.get_height() / 2 - pelaajan_kentta.get_height() / 2))
+        vastustajan_kentta = naytto.blit(vastustajan_kentta,(naytto.get_width() - vastustajan_kentta.get_width() - marginaali, naytto.get_height() / 2 - vastustajan_kentta.get_height() / 2))
+        
 
         # Tapahtumien käsittely
         for tapahtuma in pygame.event.get():
@@ -33,9 +41,34 @@ def peli():
             if tapahtuma.type == pygame.QUIT:   
                 exit()
 
+            # Hiiren vasen klikkaus
+            if tapahtuma.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed(3)[0] == True:
+                # Hiirtä klikattu pelaajan alueen päällä
+                if pelaajan_kentta.collidepoint(tapahtuma.pos):
+                    pelaajan_kentta_x = hiiri_x - marginaali    # Lasketaan uusi hiiren x ja y niin, että pelaajan pelialueen yläkulma on 0,0
+                    pelaajan_kentta_y = hiiri_y - (naytto.get_height() / 2 - pelialue_koko[1] / 2)
+                    #print("pelaajan kenttä")
+                    #print(f"x {pelaajan_kentta_x}, y {pelaajan_kentta_y}")
+                    x = int(pelaajan_kentta_x / len(pelaajan_laivat[0]))
+                    y = int(pelaajan_kentta_y / len(pelaajan_laivat))
+                    print(f"pelaajan x: {x}, y: {y}")
+
+                # Hiirtä klikattu vastustajan alueen päällä
+                if vastustajan_kentta.collidepoint(tapahtuma.pos):
+                    vastustajan_kentta_x = hiiri_x - (naytto.get_width()-(marginaali + pelialue_koko[0]))   # Lasketaan uusi hiiren x ja y niin, 
+                    vastustajan_kentta_y = hiiri_y - (naytto.get_height() / 2 - pelialue_koko[1] / 2)       # että vastustajan pelialueen yläkulma on 0,0
+                    #print("vastustajan kenttä")
+                    #print(f"x {vastustajan_kentta_x}, y {vastustajan_kentta_y}")
+                    x = int(vastustajan_kentta_x / len(vastustajan_laivat[0]))
+                    y = int(vastustajan_kentta_y / len(vastustajan_laivat))
+                    print(f"vastustajan x: {x}, y: {y}")
+                    if vastustajan_laivat[y][x] == 1:
+                        print("Osuma")
+                    if vastustajan_laivat[y][x] == 0:
+                        vastustajan_laivat[y][x] = -1
+                        print("Huti")
+
         # Päivitetään näyttö
-        naytto.blit(pelaajan_kentta,(marginaali, naytto.get_height() / 2 - pelaajan_kentta.get_height() / 2))
-        naytto.blit(vastustajan_kentta,(naytto.get_width() - vastustajan_kentta.get_width() - marginaali, naytto.get_height() / 2 - pelaajan_kentta.get_height() / 2))
         pygame.display.flip()
 
         # Seuraava frame
@@ -79,6 +112,15 @@ def piirra_pelialue(laivataulukko:list, pelialue_koko:tuple=(400,400), pelialue_
                 pygame.draw.rect(pelialue, (0,100,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
             
     return pelialue
+
+def aseta_laivat(laivataulukko):
+    for i in range(10):
+        while True:
+            y = random.randint(0,len(laivataulukko)-1)
+            x = random.randint(0,len(laivataulukko[0])-1)
+            if laivataulukko[y][x] == 0:
+                laivataulukko[y][x] = 1
+                break
 
 if __name__ == "__main__":
     peli()
