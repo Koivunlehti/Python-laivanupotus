@@ -1,6 +1,11 @@
 import pygame
 import random
 
+OHI = -1
+OSUMA = -2
+TYHJA = 0
+
+
 def peli():
     pygame.init()
 
@@ -35,6 +40,12 @@ def peli():
         pelaajan_kentta = naytto.blit(pelaajan_kentta,(marginaali, naytto.get_height() / 2 - pelaajan_kentta.get_height() / 2))
         vastustajan_kentta = naytto.blit(vastustajan_kentta,(naytto.get_width() - vastustajan_kentta.get_width() - marginaali, naytto.get_height() / 2 - vastustajan_kentta.get_height() / 2))
         
+        fontti = pygame.font.SysFont("Arial",20)
+        teksti_pelaaja = fontti.render("Pelaaja", True, (255,255,255))
+        naytto.blit(teksti_pelaaja,(marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
+
+        teksti_vastustaja = fontti.render("Vastustaja", True, (255,255,255))
+        naytto.blit(teksti_vastustaja,(naytto.get_width() - teksti_vastustaja.get_width() - marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
 
         # Tapahtumien käsittely
         for tapahtuma in pygame.event.get():
@@ -65,15 +76,19 @@ def peli():
                         x = int(vastustajan_kentta_x / len(vastustajan_laivat[0]))
                         y = int(vastustajan_kentta_y / len(vastustajan_laivat))
                         print(f"vastustajan x: {x}, y: {y}")
-                        if vastustajan_laivat[y][x] == 1:
-                            vastustajan_laivat[y][x] = 2
-                            print("Osuma")
-                            if tarkista_voitto(vastustajan_laivat):
-                                print("voitto!!!")
-                        if vastustajan_laivat[y][x] == 0:
-                            vastustajan_laivat[y][x] = -1
-                            print("Huti")
-                        vastustajan_vuoro = True
+
+                        if vastustajan_laivat[y][x] not in [OHI,OSUMA]: 
+                            if vastustajan_laivat[y][x] == 1:
+                                vastustajan_laivat[y][x] = OSUMA
+                                print("Osuma")
+                                if tarkista_voitto(vastustajan_laivat):
+                                    print("voitto!!!")
+                            if vastustajan_laivat[y][x] == TYHJA:
+                                vastustajan_laivat[y][x] = OHI
+                                print("Huti")
+                            vastustajan_vuoro = True
+                        else:
+                            print("Ei voi klikata tähän")
 
         if vastustajan_vuoro:
             pelaajan_laivat = vastustaja_pelaa(pelaajan_laivat)
@@ -87,6 +102,7 @@ def peli():
         # Seuraava frame
         kello.tick(60)
 
+# Funktio, jolla alustetaan laivataulukko
 def laivataulukon_alustus(ruutu_maara_y:int, ruutu_maara_x:int) -> list:
     ruudukko = []
     for i in range(ruutu_maara_y):
@@ -97,6 +113,7 @@ def laivataulukon_alustus(ruutu_maara_y:int, ruutu_maara_x:int) -> list:
         ruudukko.append(rivi)
     return ruudukko
 
+# Funktio, jolla piirretään pelitilanne pelaajan ja vastustajan pelialueelle.
 def piirra_pelialue(laivataulukko:list, pelialue_koko:tuple=(400, 400), pelialue_vari:tuple=(0, 162, 232), piirra_laivat:bool=True) -> pygame.Surface:
     # Luodaan pelialue
     pelialue = pygame.Surface(pelialue_koko, pygame.SRCALPHA)
@@ -113,31 +130,33 @@ def piirra_pelialue(laivataulukko:list, pelialue_koko:tuple=(400, 400), pelialue
     for i in range(ruutu_maara_x):
         viiva = pygame.draw.line(pelialue, (0,0,0), (i * ruutu_leveys, 0), (i * ruutu_leveys, pelialue.get_width()))
     
-    # Päivitetään pelialue laivataulukon mukaan
+    # Piirretään pelialue laivataulukon mukaan
     for i in range(ruutu_maara_y):
         for j in range(ruutu_maara_x):
             arvo = laivataulukko[i][j]
-            if arvo == 0:
+            if arvo == TYHJA:
                 pass
-            if arvo == -1:
+            if arvo == OHI:
                 pygame.draw.rect(pelialue, (100,0,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
-            if arvo == 1:
+            if arvo == OSUMA:
+                pygame.draw.rect(pelialue, (226,138,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
+            if arvo in [1]:
                 if piirra_laivat:
                     pygame.draw.rect(pelialue, (0,100,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
-            if arvo == 2:
-                pygame.draw.rect(pelialue, (226,138,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
             
     return pelialue
 
+# Funktio, jolla laivat lisätään pelaajan ja vastustajan laivataulukkoon.
 def aseta_laivat(laivataulukko:list) -> None:
     for i in range(10):
         while True:
             y = random.randint(0, len(laivataulukko) -1)
             x = random.randint(0, len(laivataulukko[0]) -1)
-            if laivataulukko[y][x] == 0:
+            if laivataulukko[y][x] == TYHJA:
                 laivataulukko[y][x] = 1
                 break
 
+# Funktio, jolla tarkistetaan onko laivoja jäljellä
 def tarkista_voitto(laivataulukko:list) -> bool:
     voitto = True
     for i in range(len(laivataulukko)):
@@ -145,20 +164,19 @@ def tarkista_voitto(laivataulukko:list) -> bool:
             voitto = False
     return voitto
 
+# Funktio, joka hoitaa vastustajan tekemiset
 def vastustaja_pelaa(laivataulukko: list) -> None:
     while True:
-        x = random.randint(0, len(laivataulukko[0])- 1)
-        y = random.randint(0, len(laivataulukko)- 1)
-        if laivataulukko[y][x] == 0 or laivataulukko[y][x] == 1:
+        x = random.randint(0, len(laivataulukko[0]) - 1)
+        y = random.randint(0, len(laivataulukko) - 1)
+        if laivataulukko[y][x] in [TYHJA, 1]:
             if laivataulukko[y][x] == 1:
-                laivataulukko[y][x] = 2
+                laivataulukko[y][x] = OSUMA
                 print("vastustaja osuma")
-            if laivataulukko[y][x] == 0:
-                laivataulukko[y][x] = -1
+            if laivataulukko[y][x] == TYHJA:
+                laivataulukko[y][x] = OHI
                 print("vastustaja ohi")
             return laivataulukko
-
-    
 
 if __name__ == "__main__":
     peli()
