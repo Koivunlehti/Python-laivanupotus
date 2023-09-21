@@ -1,0 +1,2 @@
+# Python-laivanupotus
+ Laivanupotus harjoitusprojekti
