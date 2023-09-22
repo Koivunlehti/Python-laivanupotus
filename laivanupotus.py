@@ -181,28 +181,37 @@ def piirra_pelialue(laivataulukko:list, pelialue_koko:tuple=(400, 400), pelialue
             if arvo in [LAIVA_1,LAIVA_2,LAIVA_3]:
                 if piirra_laivat:
                     if arvo == LAIVA_1:
-                        pygame.draw.rect(pelialue, (0,100,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
+                        pelialue.blit(piirra_laiva(LAIVA_1, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
+                        #pygame.draw.rect(pelialue, (0,100,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
                     elif arvo == LAIVA_2:
-                        pygame.draw.rect(pelialue, (255,242,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
+                        pelialue.blit(piirra_laiva(LAIVA_2, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
+                        #pygame.draw.rect(pelialue, (255,242,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
                     elif arvo == LAIVA_3:
-                        pygame.draw.rect(pelialue, (255,128,255), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
+                        pelialue.blit(piirra_laiva(LAIVA_3, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
+                        #pygame.draw.rect(pelialue, (255,128,255), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
             
     return pelialue
 
-def piirra_laiva(laiva_koko:int, ruutu_koko:tuple, vaaka:bool = True) -> pygame.Surface:
+def piirra_laiva(laiva_koko:int, ruutu_koko:tuple, vaaka:bool = True, vain_yksi_ruutu:bool = False) -> pygame.Surface:
     if vaaka:
-        laiva = pygame.Surface((ruutu_koko[1] * laiva_koko, ruutu_koko[0]), pygame.SRCALPHA)
+        x = ruutu_koko[0] * laiva_koko
+        if vain_yksi_ruutu:
+            x = ruutu_koko[0]
+        y = ruutu_koko[1]
     else:
-        laiva = pygame.Surface((ruutu_koko[1], ruutu_koko[0] * laiva_koko), pygame.SRCALPHA)
+        x = ruutu_koko[0]
+        y = ruutu_koko[1] * laiva_koko
+        if vain_yksi_ruutu:
+            y = ruutu_koko[1]
+
+    laiva = pygame.Surface((x, y), pygame.SRCALPHA)
+
     if laiva_koko == LAIVA_1:
         laiva.fill((0,100,0))
-        #pygame.draw.rect(laiva, (0,100,0), (0, 0, ruutu_koko[1], ruutu_koko[0]))
     elif laiva_koko == LAIVA_2:
         laiva.fill((255,242,0))
-        #pygame.draw.rect(laiva, (255,242,0), (0, 0, ruutu_koko[1], ruutu_koko[0] * LAIVA_2))
     elif laiva_koko == LAIVA_3:
         laiva.fill((255,128,255))
-        #pygame.draw.rect(laiva, (255,128,255), (0, 0, ruutu_koko[1], ruutu_koko[0]))
     return laiva
 
 def aseta_laiva(laivataulukko:list, laiva:int, x:int, y:int, vaaka:bool) -> bool:
