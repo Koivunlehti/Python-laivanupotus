@@ -151,7 +151,7 @@ def piirra_pelialue(laivataulukko:list, pelialue_koko:tuple=(400, 400), pelialue
                     if arvo == LAIVA_1:
                         pygame.draw.rect(pelialue, (0,100,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
                     elif arvo == LAIVA_2:
-                        pygame.draw.rect(pelialue, (163,73,164), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
+                        pygame.draw.rect(pelialue, (255,242,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
                     elif arvo == LAIVA_3:
                         pygame.draw.rect(pelialue, (255,128,255), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
             
@@ -189,18 +189,18 @@ def tarkista_laivan_sopivuus(laivataulukko, x, y, laiva, vaaka):
     sopii = True
     if vaaka == False: # Pystysuunta
         for i in range(laiva):
-            if laivataulukko[y + i][x] < len(laivataulukko):    # Tarkistetaan meneekö laiva yli ruudukosta 
-                if laivataulukko[y][x] == TYHJA:                # Tarkistetaan onko laivan alla tyhjää. 
+            if y + i < len(laivataulukko):    # Tarkistetaan meneekö laiva yli ruudukosta 
+                if laivataulukko[y][x] == TYHJA:    # Tarkistetaan onko laivan alla tyhjää. 
                     sopii = True
                 else:
-                    sopii = False                               # Jos löytyy huono kohta, lopetetaan tarkistus
+                    sopii = False                   # Jos löytyy huono kohta, lopetetaan tarkistus
                     break
             else:
                 sopii = False
                 break
     else: # Vaakasuunta
         for i in range(laiva):
-            if laivataulukko[y][x + i] < len(laivataulukko[0]):
+            if x + i < len(laivataulukko[0]):
                 if laivataulukko[y][x + i] == TYHJA:
                     sopii = True
                 else:
