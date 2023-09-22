@@ -43,6 +43,7 @@ def peli():
     # Muita peliasetuksia
     vastustajan_vuoro = False
     voitto = False
+    havio = False
 
     # Pelisilmukka alkaa
     while True:
@@ -61,11 +62,14 @@ def peli():
 
             naytto.blit(piirra_laiva(laivat[asetus_laiva_index], (20,20), asetus_asento_vaaka),(hiiri_x, hiiri_y))
         else:
-            if voitto == True:
+            if voitto or havio:
                 fontti_voitto = pygame.font.SysFont("Arial",40)
-                teksti_tietoja = fontti_voitto.render("Voitto!!!", True, (34,176,70))
-                naytto.blit(teksti_tietoja, (naytto.get_width() / 2 - teksti_tietoja.get_width() / 2, naytto.get_height() - 150))
-
+                if voitto:
+                    teksti_tietoja = fontti_voitto.render("Voitto!!!", True, (34,176,70))
+                    naytto.blit(teksti_tietoja, (naytto.get_width() / 2 - teksti_tietoja.get_width() / 2, naytto.get_height() - 150))
+                if havio:
+                    teksti_tietoja = fontti_voitto.render("Häviö!!!", True, (255,0,0))
+                    naytto.blit(teksti_tietoja, (naytto.get_width() / 2 - teksti_tietoja.get_width() / 2, naytto.get_height() - 150))
                 painike_teksti = fontti.render("uusi peli", True, (255,255,255))
                 painike_uusi_peli = pygame.Surface((painike_teksti.get_width() + 20, painike_teksti.get_height() + 20), pygame.SRCALPHA)
                 painike_uusi_peli.fill((100,100,100))
@@ -90,7 +94,7 @@ def peli():
 
             # Hiiren vasen klikkaus
             if tapahtuma.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed(3)[0] == True:
-                if voitto == True:
+                if voitto or havio:
                     if painike_uusi_peli.collidepoint(tapahtuma.pos):
                         print("uusi peli")
                         asetustila = True
@@ -99,6 +103,7 @@ def peli():
 
                         vastustajan_vuoro = False
                         voitto = False
+                        havio = False
 
                         pelaajan_laivat = laivataulukon_alustus(20,20)
                         vastustajan_laivat = laivataulukon_alustus(20,20)
@@ -120,7 +125,7 @@ def peli():
                             asetus_laiva_index += 1
 
                 # Hiirtä klikattu vastustajan alueen päällä
-                if vastustajan_vuoro == False and asetustila == False:
+                if vastustajan_vuoro == False and asetustila == False and voitto == False and havio == False:
                     if vastustajan_kentta.collidepoint(tapahtuma.pos):
                         vastustajan_kentta_x = hiiri_x - (naytto.get_width()-(marginaali + pelialue_koko[0]))   # Lasketaan uusi hiiren x ja y niin, 
                         vastustajan_kentta_y = hiiri_y - (naytto.get_height() / 2 - pelialue_koko[1] / 2)       # että vastustajan pelialueen yläkulma on 0,0
@@ -152,10 +157,11 @@ def peli():
                 print(asetus_asento_vaaka)
             #if tapahtuma.type == pygame.MOUSEBUTTONUP:
 
-        if vastustajan_vuoro and voitto == False:
+        if vastustajan_vuoro and voitto == False and havio == False:
             pelaajan_laivat = vastustaja_pelaa(pelaajan_laivat)
             if tarkista_voitto(pelaajan_laivat):
                 print("Häviö!!!")
+                havio = True
             print("vastustajan vuoro ohi")
             vastustajan_vuoro = False
 
