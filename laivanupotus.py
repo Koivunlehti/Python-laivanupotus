@@ -23,14 +23,18 @@ def peli():
     pelaajan_laivat = laivataulukon_alustus(20,20)
     vastustajan_laivat = laivataulukon_alustus(20,20)
 
-    laivat = [LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_3,LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_2]
+    laivat = [LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_2,LAIVA_2,LAIVA_2,LAIVA_3,LAIVA_3]
 
-    aseta_laivat(pelaajan_laivat, laivat)
-    aseta_laivat(vastustajan_laivat, laivat)
+    #aseta_laivat_satunnainen(pelaajan_laivat, laivat)
+    aseta_laivat_satunnainen(vastustajan_laivat, laivat)
 
     marginaali = 20
     pelialue_koko = (400,400)
     pelialue_vari = (0,162,232)
+
+    asetustila = True
+    asetus_laiva_index = 0
+    asetus_asento_vaaka = True
 
     vastustajan_vuoro = False
 
@@ -41,17 +45,29 @@ def peli():
 
         hiiri_x, hiiri_y = pygame.mouse.get_pos()
 
-        pelaajan_kentta = piirra_pelialue(pelaajan_laivat, pelialue_koko, pelialue_vari)
-        vastustajan_kentta = piirra_pelialue(vastustajan_laivat, pelialue_koko, pelialue_vari, True)
-        pelaajan_kentta = naytto.blit(pelaajan_kentta,(marginaali, naytto.get_height() / 2 - pelaajan_kentta.get_height() / 2))
-        vastustajan_kentta = naytto.blit(vastustajan_kentta,(naytto.get_width() - vastustajan_kentta.get_width() - marginaali, naytto.get_height() / 2 - vastustajan_kentta.get_height() / 2))
-        
         fontti = pygame.font.SysFont("Arial",20)
-        teksti_pelaaja = fontti.render("Pelaajan laivat", True, (255,255,255))
-        naytto.blit(teksti_pelaaja,(marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
+        pelaajan_kentta = piirra_pelialue(pelaajan_laivat, pelialue_koko, pelialue_vari)
+        pelaajan_kentta = naytto.blit(pelaajan_kentta,(marginaali, naytto.get_height() / 2 - pelaajan_kentta.get_height() / 2))
+        
+        if asetustila == True:
+            teksti_pelaaja = fontti.render("Aseta laivasi", True, (255,255,255))
+            naytto.blit(teksti_pelaaja,(marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
 
-        teksti_vastustaja = fontti.render("Vastustajan laivat", True, (255,255,255))
-        naytto.blit(teksti_vastustaja,(naytto.get_width() - teksti_vastustaja.get_width() - marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
+            naytto.blit(piirra_laiva(laivat[asetus_laiva_index], (20,20), asetus_asento_vaaka),(hiiri_x, hiiri_y))
+
+        else:
+            teksti_pelaaja = fontti.render("Pelaajan laivat", True, (255,255,255))
+            naytto.blit(teksti_pelaaja,(marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
+
+            vastustajan_kentta = piirra_pelialue(vastustajan_laivat, pelialue_koko, pelialue_vari, True)
+            vastustajan_kentta = naytto.blit(vastustajan_kentta,(naytto.get_width() - vastustajan_kentta.get_width() - marginaali, naytto.get_height() / 2 - vastustajan_kentta.get_height() / 2))
+
+            teksti_vastustaja = fontti.render("Vastustajan laivat", True, (255,255,255))
+            naytto.blit(teksti_vastustaja,(naytto.get_width() - teksti_vastustaja.get_width() - marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
+        
+        
+
+        
 
         # Tapahtumien käsittely
         for tapahtuma in pygame.event.get():
@@ -72,8 +88,12 @@ def peli():
                     y = int(pelaajan_kentta_y / len(pelaajan_laivat))
                     print(f"pelaajan x: {x}, y: {y}")
 
+                    if asetustila == True:
+                        if aseta_laiva(pelaajan_laivat, laivat[asetus_laiva_index], x, y, asetus_asento_vaaka):
+                            asetus_laiva_index += 1
+
                 # Hiirtä klikattu vastustajan alueen päällä
-                if vastustajan_vuoro == False:
+                if vastustajan_vuoro == False and asetustila == False:
                     if vastustajan_kentta.collidepoint(tapahtuma.pos):
                         vastustajan_kentta_x = hiiri_x - (naytto.get_width()-(marginaali + pelialue_koko[0]))   # Lasketaan uusi hiiren x ja y niin, 
                         vastustajan_kentta_y = hiiri_y - (naytto.get_height() / 2 - pelialue_koko[1] / 2)       # että vastustajan pelialueen yläkulma on 0,0
@@ -96,12 +116,24 @@ def peli():
                         else:
                             print("Ei voi klikata tähän")
 
+            if tapahtuma.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed(3)[2] == True:
+                if asetus_asento_vaaka:
+                    asetus_asento_vaaka = False
+                else:
+                    asetus_asento_vaaka = True 
+                print(asetus_asento_vaaka)
+            #if tapahtuma.type == pygame.MOUSEBUTTONUP:
+
         if vastustajan_vuoro:
             pelaajan_laivat = vastustaja_pelaa(pelaajan_laivat)
             if tarkista_voitto(pelaajan_laivat):
                 print("Häviö!!!")
             print("vastustajan vuoro ohi")
             vastustajan_vuoro = False
+
+        if asetus_laiva_index >= len(laivat):
+            asetustila = False
+
         # Päivitetään näyttö
         pygame.display.flip()
 
@@ -157,8 +189,38 @@ def piirra_pelialue(laivataulukko:list, pelialue_koko:tuple=(400, 400), pelialue
             
     return pelialue
 
-# Funktio, jolla laivat lisätään pelaajan ja vastustajan laivataulukkoon.
-def aseta_laivat(laivataulukko:list, laivat:list) -> None:
+def piirra_laiva(laiva_koko:int, ruutu_koko:tuple, vaaka:bool = True) -> pygame.Surface:
+    if vaaka:
+        laiva = pygame.Surface((ruutu_koko[1] * laiva_koko, ruutu_koko[0]), pygame.SRCALPHA)
+    else:
+        laiva = pygame.Surface((ruutu_koko[1], ruutu_koko[0] * laiva_koko), pygame.SRCALPHA)
+    if laiva_koko == LAIVA_1:
+        laiva.fill((0,100,0))
+        #pygame.draw.rect(laiva, (0,100,0), (0, 0, ruutu_koko[1], ruutu_koko[0]))
+    elif laiva_koko == LAIVA_2:
+        laiva.fill((255,242,0))
+        #pygame.draw.rect(laiva, (255,242,0), (0, 0, ruutu_koko[1], ruutu_koko[0] * LAIVA_2))
+    elif laiva_koko == LAIVA_3:
+        laiva.fill((255,128,255))
+        #pygame.draw.rect(laiva, (255,128,255), (0, 0, ruutu_koko[1], ruutu_koko[0]))
+    return laiva
+
+def aseta_laiva(laivataulukko:list, laiva:int, x:int, y:int, vaaka:bool) -> bool:
+    if tarkista_laivan_sopivuus(laivataulukko, x, y, laiva, vaaka):
+        if vaaka:
+            for j in range(laiva):
+                laivataulukko[y][x + j] = laiva
+            print("vaaka")
+        else:
+            for j in range(laiva):
+                laivataulukko[y + j][x] = laiva
+            print("pysty")
+        return True
+    else:
+        return False
+
+# Funktio, jolla laivat lisätään laivataulukkoon satunnaisesti.
+def aseta_laivat_satunnainen(laivataulukko:list, laivat:list) -> None:
     for i in range(len(laivat)):
         while True:
             # Arvotaan x ja y koordinaatti
