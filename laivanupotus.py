@@ -64,10 +64,6 @@ def peli():
 
             teksti_vastustaja = fontti.render("Vastustajan laivat", True, (255,255,255))
             naytto.blit(teksti_vastustaja,(naytto.get_width() - teksti_vastustaja.get_width() - marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
-        
-        
-
-        
 
         # Tapahtumien käsittely
         for tapahtuma in pygame.event.get():
@@ -182,16 +178,14 @@ def piirra_pelialue(laivataulukko:list, pelialue_koko:tuple=(400, 400), pelialue
                 if piirra_laivat:
                     if arvo == LAIVA_1:
                         pelialue.blit(piirra_laiva(LAIVA_1, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
-                        #pygame.draw.rect(pelialue, (0,100,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
                     elif arvo == LAIVA_2:
                         pelialue.blit(piirra_laiva(LAIVA_2, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
-                        #pygame.draw.rect(pelialue, (255,242,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
                     elif arvo == LAIVA_3:
                         pelialue.blit(piirra_laiva(LAIVA_3, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
-                        #pygame.draw.rect(pelialue, (255,128,255), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
             
     return pelialue
 
+# Funktio, jonka avulla laivat piirretään pelialueelle, tai hiiren kursorin alle
 def piirra_laiva(laiva_koko:int, ruutu_koko:tuple, vaaka:bool = True, vain_yksi_ruutu:bool = False) -> pygame.Surface:
     if vaaka:
         x = ruutu_koko[0] * laiva_koko
@@ -214,6 +208,7 @@ def piirra_laiva(laiva_koko:int, ruutu_koko:tuple, vaaka:bool = True, vain_yksi_
         laiva.fill((255,128,255))
     return laiva
 
+# Funktio, jonka avulla pelaaja itse asettaa laivansa laivataulukkoon.
 def aseta_laiva(laivataulukko:list, laiva:int, x:int, y:int, vaaka:bool) -> bool:
     if tarkista_laivan_sopivuus(laivataulukko, x, y, laiva, vaaka):
         if vaaka:
