@@ -45,14 +45,19 @@ def peli():
     voitto = False
     havio = False
 
+    # Ajastimia
+    hidasta_vastustaja = 0
+
     # Pelisilmukka alkaa
     while True:
         # Näytön tyhjennys
         naytto.fill((0, 0, 0))
 
+        # Hiiren koordinaatit
         hiiri_x, hiiri_y = pygame.mouse.get_pos()
 
         fontti = pygame.font.SysFont("Arial",20)
+
         pelaajan_kentta = piirra_pelialue(pelaajan_laivat, pelialue_koko, pelialue_vari)
         pelaajan_kentta = naytto.blit(pelaajan_kentta, (marginaali, naytto.get_height() / 2 - pelaajan_kentta.get_height() / 2))
         
@@ -72,9 +77,15 @@ def peli():
                     naytto.blit(teksti_tietoja, (naytto.get_width() / 2 - teksti_tietoja.get_width() / 2, naytto.get_height() - 150))
                 painike_teksti = fontti.render("Uusi peli", True, (255,255,255))
                 painike_uusi_peli = pygame.Surface((painike_teksti.get_width() + 20, painike_teksti.get_height() + 20), pygame.SRCALPHA)
-                painike_uusi_peli.fill((100,100,100))
-                painike_uusi_peli.blit(painike_teksti,(10,10))
+                painike_uusi_peli.fill((100, 100, 100))
+                painike_uusi_peli.blit(painike_teksti, (10, 10))
                 painike_uusi_peli = naytto.blit(painike_uusi_peli, (naytto.get_width() / 2 - painike_uusi_peli.get_width() / 2, naytto.get_height() - 100))
+            else:
+                if vastustajan_vuoro:
+                    teksti_tietoja = fontti.render("Vastustajan vuoro...",True,(255,255,255))
+                else:
+                    teksti_tietoja = fontti.render("Pelaajan vuoro...",True,(255,255,255))
+                naytto.blit(teksti_tietoja, (naytto.get_width() / 2 - teksti_tietoja.get_width() / 2, naytto.get_height() - 150))
 
             teksti_pelaaja = fontti.render("Pelaajan laivat", True, (255,255,255))
             naytto.blit(teksti_pelaaja, (marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
@@ -146,6 +157,7 @@ def peli():
                                 vastustajan_laivat[y][x] = OHI
                                 print("Huti")
                             vastustajan_vuoro = True
+                            hidasta_vastustaja = random.randint(10,50)
                         else:
                             print("Ei voi klikata tähän")
 
@@ -158,16 +170,19 @@ def peli():
             #if tapahtuma.type == pygame.MOUSEBUTTONUP:
 
         if vastustajan_vuoro and voitto == False and havio == False:
-            pelaajan_laivat = vastustaja_pelaa(pelaajan_laivat)
-            if tarkista_voitto(pelaajan_laivat):
-                print("Häviö!!!")
-                havio = True
-            print("vastustajan vuoro ohi")
-            vastustajan_vuoro = False
+            if hidasta_vastustaja <= 0: 
+                pelaajan_laivat = vastustaja_pelaa(pelaajan_laivat)
+                if tarkista_voitto(pelaajan_laivat):
+                    print("Häviö!!!")
+                    havio = True
+                print("vastustajan vuoro ohi")
+                vastustajan_vuoro = False
 
         if asetus_laiva_index >= len(laivat):
             asetustila = False
 
+        if hidasta_vastustaja > 0:
+            hidasta_vastustaja -= 1
         # Päivitetään näyttö
         pygame.display.flip()
 
@@ -294,7 +309,7 @@ def tarkista_laivan_sopivuus(laivataulukko, x, y, laiva, vaaka):
     if vaaka == False: # Pystysuunta
         for i in range(laiva):
             if y + i < len(laivataulukko):    # Tarkistetaan meneekö laiva yli ruudukosta 
-                if laivataulukko[y][x] == TYHJA:    # Tarkistetaan onko laivan alla tyhjää. 
+                if laivataulukko[y + i][x] == TYHJA:    # Tarkistetaan onko laivan alla tyhjää. 
                     sopii = True
                 else:
                     sopii = False                   # Jos löytyy huono kohta, lopetetaan tarkistus
