@@ -17,7 +17,7 @@ class Laiva():
         self.ruutu_koko = ruutu_koko
 
         self.vaaka = True
-        self.koordinaatit = []
+        self.koordinaatit = self.aseta(0,0)
         self.osumat = []
         self.tuhottu = False
 
@@ -60,7 +60,6 @@ class Laiva():
                     pygame.draw.rect(laiva,(255,0,0),(0, self.ruutu_koko[1] * i, self.ruutu_koko[0], self.ruutu_koko[1]))
                 else:
                     pygame.draw.rect(laiva,self.vari,(0, self.ruutu_koko[1] * i,self.ruutu_koko[0],self.ruutu_koko[1]))
-        
         #laiva.fill(self.vari)
         return laiva
 
@@ -100,10 +99,14 @@ def peli():
         for i in range(maara):
             laivat.append(Laiva(f"{nimi}{i+1}", pituus, ruutu_koko, vari))
         return laivat
-    laivat = luo_laivoja(5, "TosiPieni", 1,(20,20),(100,100,100))
-    laivat.extend(luo_laivoja(3, "Pieni", 2,(20,20),(100,100,100)))
-    laivat.extend(luo_laivoja(2, "keski", 3,(20,20),(100,100,100)))
-    print(laivat)
+    p_laivat = luo_laivoja(5, "TosiPieni", LAIVA_1, (20,20), (100,100,100))
+    p_laivat.extend(luo_laivoja(3, "Pieni", LAIVA_2, (20,20), (100,100,100)))
+    p_laivat.extend(luo_laivoja(2, "keski", LAIVA_3, (20,20), (100,100,100)))
+
+    v_laivat = luo_laivoja(5, "TosiPieni", LAIVA_1, (20,20), (100,100,100))
+    v_laivat.extend(luo_laivoja(3, "Pieni", LAIVA_2, (20,20), (100,100,100)))
+    v_laivat.extend(luo_laivoja(2, "keski", LAIVA_3, (20,20), (100,100,100)))
+    print(v_laivat)
     
     #DEBUG LOPPU
 
@@ -113,7 +116,8 @@ def peli():
 
     # Laivojen asettelu
     #aseta_laivat_satunnainen(pelaajan_laivat, laivat)
-    aseta_laivat_satunnainen(vastustajan_laivat, laivat)
+    aseta_laivat_satunnainen(vastustajan_laivat, v_laivat)
+    print(vastustajan_laivat)
 
     # Pelialueiden asetukset
     marginaali = 20
@@ -148,14 +152,16 @@ def peli():
 
         fontti = pygame.font.SysFont("Arial",20)
 
-        pelaajan_kentta = piirra_pelialue(pelaajan_laivat, pelialue_koko, pelialue_vari)
+        pelaajan_kentta = piirra_pelialue(pelaajan_laivat, p_laivat, pelialue_koko, pelialue_vari)
         pelaajan_kentta = naytto.blit(pelaajan_kentta, (marginaali, naytto.get_height() / 2 - pelaajan_kentta.get_height() / 2))
         
         if asetustila == True:
             teksti_pelaaja = fontti.render("Aseta laivasi", True, (255,255,255))
             naytto.blit(teksti_pelaaja,(marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
 
-            naytto.blit(piirra_laiva(laivat[asetus_laiva_index], (20,20), asetus_asento_vaaka), (hiiri_x, hiiri_y))
+            #naytto.blit(piirra_laiva(laivat[asetus_laiva_index], (20,20), asetus_asento_vaaka), (hiiri_x, hiiri_y))
+            p_laivat[asetus_laiva_index].vaaka = asetus_asento_vaaka
+            naytto.blit(p_laivat[asetus_laiva_index].piirra(),(hiiri_x, hiiri_y))
         else:
             if voitto or havio:
                 fontti_voitto = pygame.font.SysFont("Arial",40)
@@ -180,7 +186,7 @@ def peli():
             teksti_pelaaja = fontti.render("Pelaajan laivat", True, (255,255,255))
             naytto.blit(teksti_pelaaja, (marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
 
-            vastustajan_kentta = piirra_pelialue(vastustajan_laivat, pelialue_koko, pelialue_vari, True)
+            vastustajan_kentta = piirra_pelialue(vastustajan_laivat, v_laivat, pelialue_koko, pelialue_vari, True)
             vastustajan_kentta = naytto.blit(vastustajan_kentta, (naytto.get_width() - vastustajan_kentta.get_width() - marginaali, naytto.get_height() / 2 - vastustajan_kentta.get_height() / 2))
 
             teksti_vastustaja = fontti.render("Vastustajan laivat", True, (255,255,255))
@@ -208,7 +214,7 @@ def peli():
 
                         pelaajan_laivat = laivataulukon_alustus(20,20)
                         vastustajan_laivat = laivataulukon_alustus(20,20)
-                        aseta_laivat_satunnainen(vastustajan_laivat, laivat)
+                        aseta_laivat_satunnainen(vastustajan_laivat, v_laivat)
                         break
 
                 # Hiirtä klikattu pelaajan alueen päällä
@@ -222,7 +228,7 @@ def peli():
                     print(f"pelaajan x: {x}, y: {y}")
 
                     if asetustila == True:
-                        if aseta_laiva(pelaajan_laivat, laivat[asetus_laiva_index], x, y, asetus_asento_vaaka):
+                        if aseta_laiva(pelaajan_laivat, p_laivat[asetus_laiva_index], x, y, asetus_asento_vaaka):
                             asetus_laiva_index += 1
 
                 # Hiirtä klikattu vastustajan alueen päällä
@@ -268,7 +274,7 @@ def peli():
                 print("vastustajan vuoro ohi")
                 vastustajan_vuoro = False
 
-        if asetus_laiva_index >= len(laivat):
+        if asetus_laiva_index >= len(p_laivat):
             asetustila = False
 
         if hidasta_vastustaja > 0:
@@ -291,7 +297,7 @@ def laivataulukon_alustus(ruutu_maara_y:int, ruutu_maara_x:int) -> list:
     return ruudukko
 
 # Funktio, jolla piirretään pelitilanne pelaajan ja vastustajan pelialueelle.
-def piirra_pelialue(laivataulukko:list, pelialue_koko:tuple=(400, 400), pelialue_vari:tuple=(0, 162, 232), piirra_laivat:bool=True) -> pygame.Surface:
+def piirra_pelialue(laivataulukko:list, laivat:list, pelialue_koko:tuple=(400, 400), pelialue_vari:tuple=(0, 162, 232), piirra_laivat:bool=True) -> pygame.Surface:
     # Luodaan pelialue
     pelialue = pygame.Surface(pelialue_koko, pygame.SRCALPHA)
     pelialue.fill(pelialue_vari)
@@ -308,23 +314,29 @@ def piirra_pelialue(laivataulukko:list, pelialue_koko:tuple=(400, 400), pelialue
         viiva = pygame.draw.line(pelialue, (0,0,0), (i * ruutu_leveys, 0), (i * ruutu_leveys, pelialue.get_width()))
     
     # Piirretään pelialue laivataulukon mukaan
+    piirretyt_laivat = []
     for i in range(ruutu_maara_y):
         for j in range(ruutu_maara_x):
             arvo = laivataulukko[i][j]
             if arvo == TYHJA:
                 pass
-            if arvo == OHI:
+            elif arvo == OHI:
                 pygame.draw.rect(pelialue, (100,0,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
-            if arvo == OSUMA:
+            elif arvo == OSUMA:
                 pygame.draw.rect(pelialue, (226,138,0), (j * ruutu_leveys, i * ruutu_korkeus, ruutu_korkeus, ruutu_leveys))
-            if arvo in [LAIVA_1,LAIVA_2,LAIVA_3]:
+            elif arvo not in piirretyt_laivat:
                 if piirra_laivat:
-                    if arvo == LAIVA_1:
-                        pelialue.blit(piirra_laiva(LAIVA_1, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
-                    elif arvo == LAIVA_2:
-                        pelialue.blit(piirra_laiva(LAIVA_2, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
-                    elif arvo == LAIVA_3:
-                        pelialue.blit(piirra_laiva(LAIVA_3, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
+                    for laiva in laivat:
+                        if laiva.nimi == arvo:
+                            #rint("piirra")
+                            pelialue.blit(laiva.piirra(),(j * ruutu_leveys, i * ruutu_korkeus))
+                            piirretyt_laivat.append(laiva.nimi)
+                    # if arvo == LAIVA_1:
+                    #     pelialue.blit(piirra_laiva(LAIVA_1, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
+                    # elif arvo == LAIVA_2:
+                    #     pelialue.blit(piirra_laiva(LAIVA_2, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
+                    # elif arvo == LAIVA_3:
+                    #     pelialue.blit(piirra_laiva(LAIVA_3, (ruutu_leveys, ruutu_korkeus), vain_yksi_ruutu=True),(j * ruutu_leveys, i * ruutu_korkeus))
             
     return pelialue
 
@@ -352,16 +364,17 @@ def piirra_laiva(laiva_koko:int, ruutu_koko:tuple, vaaka:bool = True, vain_yksi_
     return laiva
 
 # Funktio, jonka avulla pelaaja itse asettaa laivansa laivataulukkoon.
-def aseta_laiva(laivataulukko:list, laiva:int, x:int, y:int, vaaka:bool) -> bool:
-    if tarkista_laivan_sopivuus(laivataulukko, x, y, laiva, vaaka):
+def aseta_laiva(laivataulukko:list, laiva:Laiva, x:int, y:int, vaaka:bool) -> bool:
+    if tarkista_laivan_sopivuus(laivataulukko, x, y, laiva.pituus, vaaka):
         if vaaka:
-            for j in range(laiva):
-                laivataulukko[y][x + j] = laiva
+            for j in range(laiva.pituus):
+                laivataulukko[y][x + j] = laiva.nimi
             print("vaaka")
         else:
-            for j in range(laiva):
-                laivataulukko[y + j][x] = laiva
+            for j in range(laiva.pituus):
+                laivataulukko[y + j][x] = laiva.nimi
             print("pysty")
+        laiva.aseta(x,y,vaaka)
         return True
     else:
         return False
@@ -369,6 +382,7 @@ def aseta_laiva(laivataulukko:list, laiva:int, x:int, y:int, vaaka:bool) -> bool
 # Funktio, jolla laivat lisätään laivataulukkoon satunnaisesti.
 def aseta_laivat_satunnainen(laivataulukko:list, laivat:list) -> None:
     for i in range(len(laivat)):
+        laiva:Laiva = laivat[i]
         while True:
             # Arvotaan x ja y koordinaatti
             y = random.randint(0, len(laivataulukko) -1)
@@ -377,27 +391,29 @@ def aseta_laivat_satunnainen(laivataulukko:list, laivat:list) -> None:
             # Tarkistetaan onko paikka tyhjä ruudukossa
             if laivataulukko[y][x] == TYHJA:
                 # Jos laiva on yhden ruudun kokoinen, se voidaan asettaa suoraan.
-                if laivat[i] == LAIVA_1:
-                    laivataulukko[y][x] = laivat[i]
+                if laiva.pituus == LAIVA_1:
+                    laivataulukko[y][x] = laiva.nimi
+                    laiva.aseta(x, y)
                     break
                 # Jos laiva on pidempi kuin yksi ruutu, tarvitaan lisätarkistuksia
                 else:
                     vaaka = random.choice((True,False))     # Arvotaan vaaka- tai pystysuunta
-                    if tarkista_laivan_sopivuus(laivataulukko, x, y, laivat[i], vaaka):     # Tarkistetaan sopiiko laiva aiottuun kohtaan kokonaisuudessaan
+                    if tarkista_laivan_sopivuus(laivataulukko, x, y, laiva.pituus, vaaka):     # Tarkistetaan sopiiko laiva aiottuun kohtaan kokonaisuudessaan
                         # Asetetaan laiva joko vaaka tai pystysuuntaan ruudukkoon
                         if vaaka:
-                            for j in range(laivat[i]):
-                                laivataulukko[y][x + j] = laivat[i]
+                            for j in range(laiva.pituus):
+                                laivataulukko[y][x + j] = laiva.nimi
                         else:
-                            for j in range(laivat[i]):
-                                laivataulukko[y + j][x] = laivat[i]
+                            for j in range(laiva.pituus):
+                                laivataulukko[y + j][x] = laiva.nimi
+                        laiva.aseta(x, y, vaaka)
                         break
 
 # Funktio, jolla tarkistetaan sopiiko laiva aiottuun kohtaan ruudukkoa.
-def tarkista_laivan_sopivuus(laivataulukko, x, y, laiva, vaaka):
+def tarkista_laivan_sopivuus(laivataulukko, x, y, laiva_koko, vaaka):
     sopii = True
     if vaaka == False: # Pystysuunta
-        for i in range(laiva):
+        for i in range(laiva_koko):
             if y + i < len(laivataulukko):    # Tarkistetaan meneekö laiva yli ruudukosta 
                 if laivataulukko[y + i][x] == TYHJA:    # Tarkistetaan onko laivan alla tyhjää. 
                     sopii = True
@@ -408,7 +424,7 @@ def tarkista_laivan_sopivuus(laivataulukko, x, y, laiva, vaaka):
                 sopii = False
                 break
     else: # Vaakasuunta
-        for i in range(laiva):
+        for i in range(laiva_koko):
             if x + i < len(laivataulukko[0]):
                 if laivataulukko[y][x + i] == TYHJA:
                     sopii = True
