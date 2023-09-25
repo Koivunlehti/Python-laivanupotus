@@ -21,6 +21,11 @@ class Laiva():
         self.osumat = []
         self.tuhottu = False
 
+    def resetoi(self) -> None:
+        self.osumat = []
+        self.tuhottu = False
+        self.koordinaatit = self.aseta(0,0)
+
     def aseta(self, x:int, y:int, vaaka:bool = True) -> list:
         self.koordinaatit = []
         self.osumat = []
@@ -212,6 +217,11 @@ def peli():
                         voitto = False
                         havio = False
 
+                        for laiva in p_laivat:
+                            laiva.resetoi()
+                        for laiva in v_laivat:
+                            laiva.resetoi()
+
                         pelaajan_laivat = laivataulukon_alustus(20,20)
                         vastustajan_laivat = laivataulukon_alustus(20,20)
                         aseta_laivat_satunnainen(vastustajan_laivat, v_laivat)
@@ -240,19 +250,34 @@ def peli():
                         #print(f"x {vastustajan_kentta_x}, y {vastustajan_kentta_y}")
                         x = int(vastustajan_kentta_x / len(vastustajan_laivat[0]))
                         y = int(vastustajan_kentta_y / len(vastustajan_laivat))
+                        vaihda_vuoro = True
                         print(f"vastustajan x: {x}, y: {y}")
 
+
                         if vastustajan_laivat[y][x] not in [OHI, OSUMA]: 
-                            if vastustajan_laivat[y][x] in [LAIVA_1, LAIVA_2, LAIVA_3]:
-                                vastustajan_laivat[y][x] = OSUMA
-                                print("Osuma")
-                                if tarkista_voitto(vastustajan_laivat):
-                                    print("voitto!!!")
-                                    voitto = True
+                            for laiva in v_laivat:
+                                if vastustajan_laivat[y][x] == laiva.nimi:
+                                    #vastustajan_laivat[y][x] = OSUMA
+                                    if laiva.osuma(x,y):
+                                        print("Osuma")
+                                    else:
+                                        print("Ei voi klikata tähän")
+                                        vaihda_vuoro = False
+                                    break
+                            if tarkista_voitto(v_laivat):
+                                print("voitto!!!")
+                                voitto = True
+                            # if vastustajan_laivat[y][x] in [LAIVA_1, LAIVA_2, LAIVA_3]:
+                            #     vastustajan_laivat[y][x] = OSUMA
+                            #     print("Osuma")
+                            #     if tarkista_voitto(v_laivat):
+                            #         print("voitto!!!")
+                            #         voitto = True
                             if vastustajan_laivat[y][x] == TYHJA:
                                 vastustajan_laivat[y][x] = OHI
                                 print("Huti")
-                            vastustajan_vuoro = True
+                            if vaihda_vuoro:
+                                vastustajan_vuoro = True
                             hidasta_vastustaja = random.randint(10,50)
                         else:
                             print("Ei voi klikata tähän")
@@ -267,8 +292,8 @@ def peli():
 
         if vastustajan_vuoro and voitto == False and havio == False:
             if hidasta_vastustaja <= 0: 
-                pelaajan_laivat = vastustaja_pelaa(pelaajan_laivat)
-                if tarkista_voitto(pelaajan_laivat):
+                pelaajan_laivat = vastustaja_pelaa(pelaajan_laivat, p_laivat)
+                if tarkista_voitto(p_laivat):
                     print("Häviö!!!")
                     havio = True
                 print("vastustajan vuoro ohi")
@@ -341,27 +366,27 @@ def piirra_pelialue(laivataulukko:list, laivat:list, pelialue_koko:tuple=(400, 4
     return pelialue
 
 # Funktio, jonka avulla laivat piirretään pelialueelle, tai hiiren kursorin alle
-def piirra_laiva(laiva_koko:int, ruutu_koko:tuple, vaaka:bool = True, vain_yksi_ruutu:bool = False) -> pygame.Surface:
-    if vaaka:
-        x = ruutu_koko[0] * laiva_koko
-        if vain_yksi_ruutu:
-            x = ruutu_koko[0]
-        y = ruutu_koko[1]
-    else:
-        x = ruutu_koko[0]
-        y = ruutu_koko[1] * laiva_koko
-        if vain_yksi_ruutu:
-            y = ruutu_koko[1]
+# def piirra_laiva(laiva_koko:int, ruutu_koko:tuple, vaaka:bool = True, vain_yksi_ruutu:bool = False) -> pygame.Surface:
+#     if vaaka:
+#         x = ruutu_koko[0] * laiva_koko
+#         if vain_yksi_ruutu:
+#             x = ruutu_koko[0]
+#         y = ruutu_koko[1]
+#     else:
+#         x = ruutu_koko[0]
+#         y = ruutu_koko[1] * laiva_koko
+#         if vain_yksi_ruutu:
+#             y = ruutu_koko[1]
 
-    laiva = pygame.Surface((x, y), pygame.SRCALPHA)
+#     laiva = pygame.Surface((x, y), pygame.SRCALPHA)
 
-    if laiva_koko == LAIVA_1:
-        laiva.fill((0,100,0))
-    elif laiva_koko == LAIVA_2:
-        laiva.fill((255,242,0))
-    elif laiva_koko == LAIVA_3:
-        laiva.fill((255,128,255))
-    return laiva
+#     if laiva_koko == LAIVA_1:
+#         laiva.fill((0,100,0))
+#     elif laiva_koko == LAIVA_2:
+#         laiva.fill((255,242,0))
+#     elif laiva_koko == LAIVA_3:
+#         laiva.fill((255,128,255))
+#     return laiva
 
 # Funktio, jonka avulla pelaaja itse asettaa laivansa laivataulukkoon.
 def aseta_laiva(laivataulukko:list, laiva:Laiva, x:int, y:int, vaaka:bool) -> bool:
@@ -438,30 +463,48 @@ def tarkista_laivan_sopivuus(laivataulukko, x, y, laiva_koko, vaaka):
 
 
 # Funktio, jolla tarkistetaan onko laivoja jäljellä
-def tarkista_voitto(laivataulukko:list) -> bool:
-    voitto = True
-    for i in range(len(laivataulukko)):
-        if LAIVA_1 in laivataulukko[i]:
-            voitto = False
-        if LAIVA_2 in laivataulukko[i]:
-            voitto = False
-        if LAIVA_3 in laivataulukko[i]:
-            voitto = False
-    return voitto
+def tarkista_voitto(laivat:list) -> bool:
+    for laiva in laivat:
+        if laiva.tuhottu == False:
+            return False
+    return True
+    # voitto = True
+    # for i in range(len(laivataulukko)):
+    #     if LAIVA_1 in laivataulukko[i]:
+    #         voitto = False
+    #     if LAIVA_2 in laivataulukko[i]:
+    #         voitto = False
+    #     if LAIVA_3 in laivataulukko[i]:
+    #         voitto = False
+    # return voitto
 
 # Funktio, joka hoitaa vastustajan tekemiset
-def vastustaja_pelaa(laivataulukko: list) -> None:
+def vastustaja_pelaa(laivataulukko: list,laivat:list) -> None:
     while True:
         x = random.randint(0, len(laivataulukko[0]) - 1)
         y = random.randint(0, len(laivataulukko) - 1)
-        if laivataulukko[y][x] in [TYHJA, LAIVA_1, LAIVA_2, LAIVA_3]:
-            if laivataulukko[y][x] in [LAIVA_1, LAIVA_2, LAIVA_3]:
-                laivataulukko[y][x] = OSUMA
-                print("vastustaja osuma")
-            if laivataulukko[y][x] == TYHJA:
-                laivataulukko[y][x] = OHI
-                print("vastustaja ohi")
-            return laivataulukko
+        if laivataulukko[y][x] not in [OHI, OSUMA, TYHJA]:
+            for laiva in laivat:
+                if laivataulukko[y][x] == laiva.nimi:
+                    if laiva.osuma(x,y):
+                        print("vastustaja osuma")
+                        break
+                        
+        elif laivataulukko[y][x] in [TYHJA]:
+            laivataulukko[y][x] = OHI
+            print("vastustaja ohi")
+            break
+        #         print("vastustaja ohi")
+
+    return laivataulukko
+        # if laivataulukko[y][x] in [TYHJA, LAIVA_1, LAIVA_2, LAIVA_3]:
+        #     if laivataulukko[y][x] in [LAIVA_1, LAIVA_2, LAIVA_3]:
+        #         laivataulukko[y][x] = OSUMA
+        #         print("vastustaja osuma")
+        #     if laivataulukko[y][x] == TYHJA:
+        #         laivataulukko[y][x] = OHI
+        #         print("vastustaja ohi")
+        #     return laivataulukko
 
 if __name__ == "__main__":
     peli()
