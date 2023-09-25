@@ -34,12 +34,16 @@ class Laiva():
             self.vaaka = False
         return self.koordinaatit
     
-    def osuma(self, x, y):
+    def osuma(self, x:int, y:int) -> bool:
+        osuma = False
         if (x,y) in self.koordinaatit:
             if (x,y) not in self.osumat:
                 self.osumat.append((x,y))
+                osuma = True
+
         if len(self.osumat) == len(self.koordinaatit):
             self.tuhottu = True
+        return osuma
 
     def piirra(self) -> pygame.Surface:
         if self.vaaka:
@@ -71,7 +75,7 @@ def peli():
     pygame.display.set_caption("Laivanupotus")
 
     # Käytössä olevat laivat
-    laivat = [LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_2,LAIVA_2,LAIVA_2,LAIVA_3,LAIVA_3]
+    #laivat = [LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_1,LAIVA_2,LAIVA_2,LAIVA_2,LAIVA_3,LAIVA_3]
 
     #DEBUG
     laiva = Laiva("nimi1",3)
@@ -90,6 +94,17 @@ def peli():
     # laiva = Laiva("nimi2",2)
     # print(laiva.aseta(0,0,True))
     # print(laiva.aseta(0,0,False))
+
+    def luo_laivoja(maara, nimi, pituus, ruutu_koko, vari):
+        laivat = []
+        for i in range(maara):
+            laivat.append(Laiva(f"{nimi}{i+1}", pituus, ruutu_koko, vari))
+        return laivat
+    laivat = luo_laivoja(5, "TosiPieni", 1,(20,20),(100,100,100))
+    laivat.extend(luo_laivoja(3, "Pieni", 2,(20,20),(100,100,100)))
+    laivat.extend(luo_laivoja(2, "keski", 3,(20,20),(100,100,100)))
+    print(laivat)
+    
     #DEBUG LOPPU
 
     # Laivataulukot
@@ -127,7 +142,7 @@ def peli():
         naytto.blit(laiva.piirra(),(10,10))
         # DEBUG LOPPU
 
-        
+
         # Hiiren koordinaatit
         hiiri_x, hiiri_y = pygame.mouse.get_pos()
 
