@@ -21,13 +21,13 @@ def peli():
     naytto = pygame.display.set_mode((1000, 800))
     pygame.display.set_caption("Laivanupotus")
 
-    p_laivat = luo_laivoja(5, "TosiPieni", LAIVA_1, (20,20), (100,100,100))
-    p_laivat.extend(luo_laivoja(3, "Pieni", LAIVA_2, (20,20), (100,100,100)))
-    p_laivat.extend(luo_laivoja(2, "keski", LAIVA_3, (20,20), (100,100,100)))
+    p_laivat = luo_laivoja(5, "TosiPieni", LAIVA_1, (20,20), (0,100,0))
+    p_laivat.extend(luo_laivoja(3, "Pieni", LAIVA_2, (20,20), (255,242,0)))
+    p_laivat.extend(luo_laivoja(2, "keski", LAIVA_3, (20,20), (255,128,255)))
 
-    v_laivat = luo_laivoja(5, "TosiPieni", LAIVA_1, (20,20), (100,100,100))
-    v_laivat.extend(luo_laivoja(3, "Pieni", LAIVA_2, (20,20), (100,100,100)))
-    v_laivat.extend(luo_laivoja(2, "keski", LAIVA_3, (20,20), (100,100,100)))
+    v_laivat = luo_laivoja(5, "TosiPieni", LAIVA_1, (20,20), (0,100,0))
+    v_laivat.extend(luo_laivoja(3, "Pieni", LAIVA_2, (20,20), (255,242,0)))
+    v_laivat.extend(luo_laivoja(2, "keski", LAIVA_3, (20,20), (255,128,255)))
 
     # Laivataulukot
     pelaajan_laivat = laivataulukon_alustus(20,20)
@@ -150,7 +150,7 @@ def peli():
                 # Hiirtä klikattu vastustajan alueen päällä
                 if vastustajan_vuoro == False and asetustila == False and voitto == False and havio == False:
                     if vastustajan_kentta.collidepoint(tapahtuma.pos):
-                        vastustajan_kentta_x = hiiri_x - (naytto.get_width()-(marginaali + pelialue_koko[0]))   # Lasketaan uusi hiiren x ja y niin, 
+                        vastustajan_kentta_x = hiiri_x - (naytto.get_width() - (marginaali + pelialue_koko[0]))   # Lasketaan uusi hiiren x ja y niin, 
                         vastustajan_kentta_y = hiiri_y - (naytto.get_height() / 2 - pelialue_koko[1] / 2)       # että vastustajan pelialueen yläkulma on 0,0
                         #print("vastustajan kenttä")
                         #print(f"x {vastustajan_kentta_x}, y {vastustajan_kentta_y}")
