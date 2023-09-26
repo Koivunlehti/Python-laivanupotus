@@ -2,7 +2,7 @@ import pygame
 import random
 
 from laiva import Laiva
-from grafiikka import ohi, teksti
+from grafiikka import ohi, teksti, painike
 
 OHI = -1
 OSUMA = -2
@@ -64,6 +64,10 @@ def peli():
         hiiri_x, hiiri_y = pygame.mouse.get_pos()
 
         # Piirrä käyttöliittymä
+
+        teksti_otsikko = teksti("Laivanupotus", (255,255,255), fontti_koko = 40)
+        naytto.blit(teksti_otsikko,(naytto.get_width() / 2 - teksti_otsikko.get_width() / 2, 50))
+
         pelaajan_kentta = piirra_pelialue(pelaajan_pelialue, p_laivat, pelialue_koko, pelialue_vari)
         pelaajan_kentta = naytto.blit(pelaajan_kentta, (marginaali, naytto.get_height() / 2 - pelaajan_kentta.get_height() / 2))
         
@@ -76,15 +80,13 @@ def peli():
         else:
             if voitto or havio:
                 if voitto:
-                    teksti_tietoja = teksti("Voitto!!!",(34,176,70), fontti_koko=40)
+                    teksti_tietoja = teksti("Voitto!!!",(34,176,70), fontti_koko = 40)
                     naytto.blit(teksti_tietoja, (naytto.get_width() / 2 - teksti_tietoja.get_width() / 2, naytto.get_height() - 150))
                 if havio:
-                    teksti_tietoja = teksti("Häviö!!!", (255,0,0), fontti_koko=40)
+                    teksti_tietoja = teksti("Häviö!!!", (255,0,0), fontti_koko = 40)
                     naytto.blit(teksti_tietoja, (naytto.get_width() / 2 - teksti_tietoja.get_width() / 2, naytto.get_height() - 150))
                 painike_teksti = teksti("Uusi peli")
-                painike_uusi_peli = pygame.Surface((painike_teksti.get_width() + 20, painike_teksti.get_height() + 20), pygame.SRCALPHA)
-                painike_uusi_peli.fill((100, 100, 100))
-                painike_uusi_peli.blit(painike_teksti, (10, 10))
+                painike_uusi_peli = painike((painike_teksti.get_width() + 20, painike_teksti.get_height() + 20),(100,100,100), painike_teksti)
                 painike_uusi_peli = naytto.blit(painike_uusi_peli, (naytto.get_width() / 2 - painike_uusi_peli.get_width() / 2, naytto.get_height() - 100))
             else:
                 if vastustajan_vuoro:

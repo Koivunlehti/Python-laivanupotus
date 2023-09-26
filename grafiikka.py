@@ -183,3 +183,19 @@ def teksti(teksti:str, vari:tuple[int,int,int] | str = (255,255,255), fontti:str
     kirjoitus_fontti = font.SysFont(fontti, fontti_koko)
     kirjoitus = kirjoitus_fontti.render(teksti, True, vari)
     return kirjoitus
+
+def painike(koko:tuple, vari:tuple[int,int,int] | str, teksti:Surface | None = None) -> Surface:
+    koko_x = koko[0]
+    koko_y = koko[1]
+    if teksti != None:
+        if koko_x < teksti.get_width():
+            koko_x = teksti.get_width()
+        if koko_y < teksti.get_height():
+            koko_y = teksti.get_height()
+    
+    painike = Surface((koko_x, koko_y), SRCALPHA)
+    painike.fill(vari)
+    if teksti != None:
+        painike.blit(teksti,(painike.get_width() / 2 - teksti.get_width() / 2, painike.get_height() / 2 - teksti.get_height() / 2))
+
+    return painike
