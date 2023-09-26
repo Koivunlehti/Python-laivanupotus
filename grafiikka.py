@@ -1,4 +1,4 @@
-from pygame import Surface, draw, SRCALPHA
+from pygame import Surface, draw, SRCALPHA, font
 
 def soutuvene(ruutukoko:tuple, vari:tuple[int,int,int] | str, vaaka:bool = True) -> Surface:
     laiva = Surface(ruutukoko, SRCALPHA)
@@ -165,14 +165,21 @@ def keskiosa(ruutukoko:tuple, vari:tuple[int,int,int] | str, vaaka:bool = True) 
 
     return laiva
 
-def ohi(ruutukoko:tuple, vari:tuple[int,int,int]):
+def ohi(ruutukoko:tuple, vari:tuple[int,int,int]) -> Surface:
     ohi = Surface(ruutukoko, SRCALPHA)
     draw.ellipse(ohi, vari, (0, 0, ruutukoko[0], ruutukoko[1]), 2)
     draw.ellipse(ohi, vari, (ruutukoko[0] / 2 - 5, ruutukoko[1] / 2 - 5, 10, 10), 3)
     return ohi
 
-def osuma(ruutukoko:tuple,):
+def osuma(ruutukoko:tuple) -> Surface:
     osuma = Surface(ruutukoko, SRCALPHA)
     draw.ellipse(osuma, (255,100,25), (0, 0, ruutukoko[0], ruutukoko[1]))
     draw.ellipse(osuma, (255,150,25), (ruutukoko[0] / 2 - 5, ruutukoko[1] / 2 - 5, 10, 10))
     return osuma
+
+# Käyttöliittymä
+
+def teksti(teksti:str, vari:tuple[int,int,int] | str = (255,255,255), fontti:str = "Arial", fontti_koko:int = 20) -> Surface:
+    kirjoitus_fontti = font.SysFont(fontti, fontti_koko)
+    kirjoitus = kirjoitus_fontti.render(teksti, True, vari)
+    return kirjoitus

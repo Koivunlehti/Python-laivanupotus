@@ -2,7 +2,7 @@ import pygame
 import random
 
 from laiva import Laiva
-from grafiikka import ohi
+from grafiikka import ohi, teksti
 
 OHI = -1
 OSUMA = -2
@@ -63,45 +63,43 @@ def peli():
         # Hiiren koordinaatit
         hiiri_x, hiiri_y = pygame.mouse.get_pos()
 
-        fontti = pygame.font.SysFont("Arial",20)
-
+        # Piirrä käyttöliittymä
         pelaajan_kentta = piirra_pelialue(pelaajan_pelialue, p_laivat, pelialue_koko, pelialue_vari)
         pelaajan_kentta = naytto.blit(pelaajan_kentta, (marginaali, naytto.get_height() / 2 - pelaajan_kentta.get_height() / 2))
         
         if asetustila == True:
-            teksti_pelaaja = fontti.render("Aseta laivasi", True, (255,255,255))
+            teksti_pelaaja = teksti("Aseta laivasi")
             naytto.blit(teksti_pelaaja,(marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
 
             p_laivat[asetus_laiva_index].vaaka = asetus_asento_vaaka
             naytto.blit(p_laivat[asetus_laiva_index].piirra(),(hiiri_x, hiiri_y))
         else:
             if voitto or havio:
-                fontti_voitto = pygame.font.SysFont("Arial",40)
                 if voitto:
-                    teksti_tietoja = fontti_voitto.render("Voitto!!!", True, (34,176,70))
+                    teksti_tietoja = teksti("Voitto!!!",(34,176,70), fontti_koko=40)
                     naytto.blit(teksti_tietoja, (naytto.get_width() / 2 - teksti_tietoja.get_width() / 2, naytto.get_height() - 150))
                 if havio:
-                    teksti_tietoja = fontti_voitto.render("Häviö!!!", True, (255,0,0))
+                    teksti_tietoja = teksti("Häviö!!!", (255,0,0), fontti_koko=40)
                     naytto.blit(teksti_tietoja, (naytto.get_width() / 2 - teksti_tietoja.get_width() / 2, naytto.get_height() - 150))
-                painike_teksti = fontti.render("Uusi peli", True, (255,255,255))
+                painike_teksti = teksti("Uusi peli")
                 painike_uusi_peli = pygame.Surface((painike_teksti.get_width() + 20, painike_teksti.get_height() + 20), pygame.SRCALPHA)
                 painike_uusi_peli.fill((100, 100, 100))
                 painike_uusi_peli.blit(painike_teksti, (10, 10))
                 painike_uusi_peli = naytto.blit(painike_uusi_peli, (naytto.get_width() / 2 - painike_uusi_peli.get_width() / 2, naytto.get_height() - 100))
             else:
                 if vastustajan_vuoro:
-                    teksti_tietoja = fontti.render("Vastustajan vuoro...",True,(255,255,255))
+                    teksti_tietoja = teksti("Vastustajan vuoro...")
                 else:
-                    teksti_tietoja = fontti.render("Pelaajan vuoro...",True,(255,255,255))
+                    teksti_tietoja = teksti("Pelaajan vuoro...")
                 naytto.blit(teksti_tietoja, (naytto.get_width() / 2 - teksti_tietoja.get_width() / 2, naytto.get_height() - 150))
 
-            teksti_pelaaja = fontti.render("Pelaajan laivat", True, (255,255,255))
+            teksti_pelaaja = teksti("Pelaajan laivat")
             naytto.blit(teksti_pelaaja, (marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
 
             vastustajan_kentta = piirra_pelialue(vastustajan_pelialue, v_laivat, pelialue_koko, pelialue_vari, True)
             vastustajan_kentta = naytto.blit(vastustajan_kentta, (naytto.get_width() - vastustajan_kentta.get_width() - marginaali, naytto.get_height() / 2 - vastustajan_kentta.get_height() / 2))
 
-            teksti_vastustaja = fontti.render("Vastustajan laivat", True, (255,255,255))
+            teksti_vastustaja = teksti("Vastustajan laivat")
             naytto.blit(teksti_vastustaja, (naytto.get_width() - teksti_vastustaja.get_width() - marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
 
         # Tapahtumien käsittely
