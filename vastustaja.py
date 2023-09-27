@@ -4,7 +4,10 @@ from laiva import Laiva
 class Vastustaja:
     def __init__(self) -> None:
         self.viimeisin_osuma = ()
+        self.ensimmainen_osuma = ()
         self.laiva_tuhottu = True
+        self.laiva_vaaka = None
+
         self.ammuntojen_maara = 0
 
     def pelaa(self, pelialue:list, laivat:list[Laiva]) -> tuple[list, list]:
@@ -17,29 +20,52 @@ class Vastustaja:
                 mahdolliset_kohteet = []
                 x = self.viimeisin_osuma[0]
                 y = self.viimeisin_osuma[1]
-                if y - 1 >= 0:
-                    if pelialue[y - 1][x] not in [OHI]:
-                        mahdolliset_kohteet.append((x, y - 1))
-                if y + 1 < len(pelialue):
-                    if pelialue[y + 1][x] not in [OHI]:
-                        mahdolliset_kohteet.append((x, y + 1))
-                if x - 1 >= 0:
-                    if pelialue[y][x - 1] not in [OHI]:
-                        mahdolliset_kohteet.append((x - 1, y))
-                if x + 1 < len(pelialue[0]):
-                    if pelialue[y][x + 1] not in [OHI]:
-                        mahdolliset_kohteet.append((x + 1, y))
 
-                for kohde in mahdolliset_kohteet:
-                    for laiva in laivat:
-                        if kohde in laiva.osumat:
-                            print(f"Poista kohde {kohde}")
-                            mahdolliset_kohteet.remove(kohde)
+                print(f"onko laiva vaakatasossa: {self.laiva_vaaka}")
+                mahdolliset_kohteet = self.__valitse_ymparilta(pelialue, x, y)
+                # if self.laiva_vaaka == None or self.laiva_vaaka == False:
+                #     if y - 1 >= 0:
+                #         if pelialue[y - 1][x] not in [OHI]:
+                #             mahdolliset_kohteet.append((x, y - 1))
+                #     if y + 1 < len(pelialue):
+                #         if pelialue[y + 1][x] not in [OHI]:
+                #             mahdolliset_kohteet.append((x, y + 1))
+                # if self.laiva_vaaka == None or self.laiva_vaaka == True:
+                #     if x - 1 >= 0:
+                #         if pelialue[y][x - 1] not in [OHI]:
+                #             mahdolliset_kohteet.append((x - 1, y))
+                #     if x + 1 < len(pelialue[0]):
+                #         if pelialue[y][x + 1] not in [OHI]:
+                #             mahdolliset_kohteet.append((x + 1, y))
+
+                # Tarkistetaan onko mahdollisissa kohteissa jo valmiita osumia laivoihin.
+                # Jos on, poistetaan kyseinen kohde
+                mahdolliset_kohteet = self.__tarkista_kohteet(mahdolliset_kohteet, laivat)
+                # for kohde in mahdolliset_kohteet:
+                #     for laiva in laivat:
+                #         if kohde in laiva.osumat:
+                #             print(f"Poista kohde {kohde}")
+                #             mahdolliset_kohteet.remove(kohde)
+
+
+                if len(mahdolliset_kohteet) == 0:
+                    x = self.ensimmainen_osuma[0]
+                    y = self.ensimmainen_osuma[1]
+                    mahdolliset_kohteet = self.__valitse_ymparilta(pelialue, x, y)
+                    mahdolliset_kohteet = self.__tarkista_kohteet(mahdolliset_kohteet, laivat)
+                # for kohde in mahdolliset_kohteet:
+                #     for laiva in laivat:
+                #         if kohde in laiva.osumat:
+                #             print(f"Poista kohde {kohde}")
+                #             mahdolliset_kohteet.remove(kohde)
 
                 if len(mahdolliset_kohteet) <= 0:
                     print("ei mahdollisia kohteita")
-                    self.viimeisin_osuma = ()
-                    self.laiva_tuhottu = True
+                    self.__lopeta_metsastys()
+                    # self.viimeisin_osuma = ()
+                    # self.laiva_tuhottu = True
+                    # self.laiva_vaaka = None
+                    # self.ensimmainen_osuma = ()
                 else:
                     print(f"mahdolliset kohteet {mahdolliset_kohteet}")
                     arvottu_koordinaatti = mahdolliset_kohteet[random.randint(0, len(mahdolliset_kohteet) - 1)]
@@ -56,11 +82,22 @@ class Vastustaja:
                         if laiva.osuma(x,y):
                             print("vastustaja osuma")
                             if laiva.tuhottu != True:
+                                if len(self.ensimmainen_osuma) == 0:
+                                    self.ensimmainen_osuma = (x, y)
+                                if len(self.viimeisin_osuma) > 0 and self.laiva_vaaka == None:
+                                    print(f"onko sama x: {self.viimeisin_osuma[0]} == {x}")
+                                    if self.viimeisin_osuma[0] == x:
+                                        self.laiva_vaaka = False
+                                    else:
+                                        self.laiva_vaaka = True
                                 self.viimeisin_osuma = (x, y)
                                 self.laiva_tuhottu = False
                             else:
-                                self.viimeisin_osuma = ()
-                                self.laiva_tuhottu = True
+                                self.__lopeta_metsastys()
+                                # self.viimeisin_osuma = ()
+                                # self.laiva_tuhottu = True
+                                # self.laiva_vaaka = None
+                                # self.ensimmainen_osuma = ()
                             yrita = False
                             self.ammuntojen_maara += 1
                             
@@ -72,4 +109,38 @@ class Vastustaja:
 
         print(f"vastustaja ampunut {self.ammuntojen_maara} kertaa")
         return pelialue, laivat
+
+    def __valitse_ymparilta(self, pelialue:list, x:int, y:int) -> list:
+        OHI = -1
+        TYHJA = 0
+        mahdolliset_kohteet = []
+        if self.laiva_vaaka == None or self.laiva_vaaka == False:
+            if y - 1 >= 0:
+                if pelialue[y - 1][x] not in [OHI]:
+                    mahdolliset_kohteet.append((x, y - 1))
+            if y + 1 < len(pelialue):
+                if pelialue[y + 1][x] not in [OHI]:
+                    mahdolliset_kohteet.append((x, y + 1))
+        if self.laiva_vaaka == None or self.laiva_vaaka == True:
+            if x - 1 >= 0:
+                if pelialue[y][x - 1] not in [OHI]:
+                    mahdolliset_kohteet.append((x - 1, y))
+            if x + 1 < len(pelialue[0]):
+                if pelialue[y][x + 1] not in [OHI]:
+                    mahdolliset_kohteet.append((x + 1, y))
+        return mahdolliset_kohteet
+
+    def __tarkista_kohteet(self, kohteet:list, laivat:list[Laiva]) -> list:
+        for kohde in kohteet:
+            for laiva in laivat:
+                if kohde in laiva.osumat:
+                    print(f"Poista kohde {kohde}")
+                    kohteet.remove(kohde)
+        return kohteet
+
+    def __lopeta_metsastys(self) -> None:
+        self.viimeisin_osuma = ()
+        self.laiva_tuhottu = True
+        self.laiva_vaaka = None
+        self.ensimmainen_osuma = ()
     

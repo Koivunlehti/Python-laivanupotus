@@ -136,6 +136,8 @@ def peli():
                         pelaajan_pelialue = pelitaulukon_alustus(20,20)
                         vastustajan_pelialue = pelitaulukon_alustus(20,20)
                         aseta_laivat_satunnainen(vastustajan_pelialue, v_laivat)
+
+                        vastustaja = Vastustaja()
                         break
 
                 # Hiirtä klikattu pelaajan alueen päällä
