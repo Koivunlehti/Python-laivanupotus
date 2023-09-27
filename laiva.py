@@ -42,34 +42,37 @@ class Laiva():
             self.tuhottu = True
         return osuma
 
-    def piirra(self) -> Surface:
+    def piirra(self, piirra_kaikki = True) -> Surface:
         if len(self.koordinaatit) == 1:
+            laiva = Surface((self.ruutu_koko[0], self.ruutu_koko[1]), SRCALPHA)
+            if piirra_kaikki:
+                laiva = grafiikka.soutuvene(self.ruutu_koko, "brown", vaaka = self.vaaka)
             if self.koordinaatit[0] in self.osumat:
                 laiva = grafiikka.osuma(self.ruutu_koko)
-            else:
-                laiva = grafiikka.soutuvene(self.ruutu_koko, "brown", vaaka = self.vaaka)
                 
         else:
             if self.vaaka:
                 laiva = Surface((self.ruutu_koko[0] * self.pituus, self.ruutu_koko[1]), SRCALPHA)
                 for i in range(len(self.koordinaatit)):
-                    if i == 0:
-                        laiva.blit(grafiikka.keula(self.ruutu_koko,"gray", self.vaaka),(0,0))
-                    elif i == len(self.koordinaatit) - 1:
-                        laiva.blit(grafiikka.pera(self.ruutu_koko,"gray", self.vaaka),(i * self.ruutu_koko[0],0))
-                    else:
-                        laiva.blit(grafiikka.keskiosa(self.ruutu_koko,"gray", self.vaaka),(i * self.ruutu_koko[0],0))
+                    if piirra_kaikki:
+                        if i == 0:
+                            laiva.blit(grafiikka.keula(self.ruutu_koko,"gray", self.vaaka),(0,0))
+                        elif i == len(self.koordinaatit) - 1:
+                            laiva.blit(grafiikka.pera(self.ruutu_koko,"gray", self.vaaka),(i * self.ruutu_koko[0],0))
+                        else:
+                            laiva.blit(grafiikka.keskiosa(self.ruutu_koko,"gray", self.vaaka),(i * self.ruutu_koko[0],0))
                     if self.koordinaatit[i] in self.osumat:
                         laiva.blit(grafiikka.osuma(self.ruutu_koko),(i * self.ruutu_koko[0],0))
             else:
                 laiva = Surface((self.ruutu_koko[0], self.ruutu_koko[1] * self.pituus), SRCALPHA)
                 for i in range(len(self.koordinaatit)):
-                    if i == 0:
-                        laiva.blit(grafiikka.keula(self.ruutu_koko,"gray", self.vaaka),(0,0))
-                    elif i == len(self.koordinaatit) - 1:
-                        laiva.blit(grafiikka.pera(self.ruutu_koko,"gray", self.vaaka),(0, i * self.ruutu_koko[1]))
-                    else:
-                        laiva.blit(grafiikka.keskiosa(self.ruutu_koko,"gray", self.vaaka),(0, i * self.ruutu_koko[1]))
+                    if piirra_kaikki:
+                        if i == 0:
+                            laiva.blit(grafiikka.keula(self.ruutu_koko,"gray", self.vaaka),(0,0))
+                        elif i == len(self.koordinaatit) - 1:
+                            laiva.blit(grafiikka.pera(self.ruutu_koko,"gray", self.vaaka),(0, i * self.ruutu_koko[1]))
+                        else:
+                            laiva.blit(grafiikka.keskiosa(self.ruutu_koko,"gray", self.vaaka),(0, i * self.ruutu_koko[1]))
                     if self.koordinaatit[i] in self.osumat:
                         laiva.blit(grafiikka.osuma(self.ruutu_koko),(0, i * self.ruutu_koko[1]))
         return laiva
