@@ -14,11 +14,30 @@ class Laiva():
         self.tuhottu = False
 
     def resetoi(self) -> None:
+        """ Palauta laiva alkutilaan."""
         self.osumat = []
         self.tuhottu = False
         self.koordinaatit = self.aseta(0,0)
 
     def aseta(self, x:int, y:int, vaaka:bool = True) -> list:
+        """ Merkataan laivalle koordinaatit, jossa se sijaitsee pelitaulukossa.
+
+        Parametrit
+        ----------
+        x : int
+            X-koordinaatti.
+
+        y : int
+            Y-koordinaatti.
+
+        vaaka : bool, valinnainen
+            Onko laiva vaaka- (True) vai pystysuunnassa (False).
+        
+        Palauttaa 
+        ----------
+        list
+            Palauttaa laivan koordinaatit.
+        """
         self.koordinaatit = []
         self.osumat = []
         if vaaka:
@@ -32,6 +51,20 @@ class Laiva():
         return self.koordinaatit
     
     def osuma(self, x:int, y:int) -> bool:
+        """ Merkataan laivaan osuma, jos koordinaatit täsmäävät laivan sijainnin kanssa.
+
+        Parametrit
+        ----------
+        x : int
+            X-koordinaatti.
+        y : int
+            Y-koordinaatti.
+
+        Palauttaa 
+        ----------
+        bool
+            Palauttaa (True) jos osuma tuli, muuten (False).
+        """
         osuma = False
         if (x,y) in self.koordinaatit:
             if (x,y) not in self.osumat:
@@ -43,6 +76,18 @@ class Laiva():
         return osuma
 
     def piirra(self, piirra_kaikki = True) -> Surface:
+        """ Piirretään laiva.
+
+        Parametrit
+        ----------
+        piirra_kaikki : bool, valinnainen
+            Piirretäänkö koko laiva vai pelkästään osumat.
+
+        Palauttaa 
+        ----------
+        pygame.Surface
+            Palauttaa pygame.Surface olion, johon laiva on piirretty.
+        """
         if len(self.koordinaatit) == 1:
             laiva = Surface((self.ruutu_koko[0], self.ruutu_koko[1]), SRCALPHA)
             if piirra_kaikki:

@@ -5,3 +5,7 @@ TYHJA = 0
 LAIVA_1 = 1
 LAIVA_2 = 2
 LAIVA_3 = 3
+LAIVA_4 = 4
+LAIVA_5 = 5
+
+DEBUG = False

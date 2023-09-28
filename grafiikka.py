@@ -1,6 +1,24 @@
 from pygame import Surface, draw, SRCALPHA, font
 
 def soutuvene(ruutukoko:tuple, vari:tuple[int,int,int] | str, vaaka:bool = True) -> Surface:
+    """ Piirretään yhden ruudun pituinen laiva.
+
+        Parametrit
+        ----------
+        ruutukoko : tuple
+            Pelitaulukon ruudun koko.
+
+        vari : tuple[int,int,int] | str
+            Laivan väri.
+
+        vaaka : bool, valinnainen
+            Onko laiva vaaka- (True) vai pystysuunnassa (False).
+
+        Palauttaa 
+        ----------
+        pygame.Surface
+            Palauttaa pygame.Surface olion, johon laiva on piirretty.
+    """
     laiva = Surface(ruutukoko, SRCALPHA)
     x = 0
     y = 0
@@ -15,6 +33,25 @@ def soutuvene(ruutukoko:tuple, vari:tuple[int,int,int] | str, vaaka:bool = True)
     return laiva
 
 def keula(ruutukoko:tuple, vari:tuple[int,int,int] | str, vaaka:bool = True) -> Surface:
+    """ Piirretään laivan keula.
+        Tätä on tarkoitus käyttää kun laiva on pidempi kuin yksi ruutu.
+
+        Parametrit
+        ----------
+        ruutukoko : tuple
+            Pelitaulukon ruudun koko.
+
+        vari : tuple[int,int,int] | str
+            Laivan väri.
+
+        vaaka : bool, valinnainen
+            Onko laiva vaaka- (True) vai pystysuunnassa (False).
+
+        Palauttaa 
+        ----------
+        pygame.Surface
+            Palauttaa pygame.Surface olion, johon keula on piirretty.
+    """
     laiva = Surface(ruutukoko, SRCALPHA)
     x = 0
     y = 0
@@ -61,6 +98,25 @@ def keula(ruutukoko:tuple, vari:tuple[int,int,int] | str, vaaka:bool = True) -> 
     return laiva
 
 def pera(ruutukoko:tuple, vari:tuple[int,int,int] | str, vaaka:bool = True) -> Surface:
+    """ Piirretään laivan perä.
+        Tätä on tarkoitus käyttää kun laiva on pidempi kuin yksi ruutu.
+
+        Parametrit
+        ----------
+        ruutukoko : tuple
+            Pelitaulukon ruudun koko.
+
+        vari : tuple[int,int,int] | str
+            Laivan väri.
+
+        vaaka : bool, valinnainen
+            Onko laiva vaaka- (True) vai pystysuunnassa (False).
+
+        Palauttaa 
+        ----------
+        pygame.Surface
+            Palauttaa pygame.Surface olion, johon perä on piirretty.
+    """
     laiva = Surface(ruutukoko, SRCALPHA)
     x = 0
     y = 0
@@ -108,6 +164,25 @@ def pera(ruutukoko:tuple, vari:tuple[int,int,int] | str, vaaka:bool = True) -> S
     return laiva
 
 def keskiosa(ruutukoko:tuple, vari:tuple[int,int,int] | str, vaaka:bool = True) -> Surface:
+    """ Piirretään laivan keskiosa.
+        Tätä on tarkoitus käyttää kun laiva on pidempi kuin kaksi ruutua.
+
+        Parametrit
+        ----------
+        ruutukoko : tuple
+            Pelitaulukon ruudun koko.
+
+        vari : tuple[int,int,int] | str
+            Laivan väri.
+
+        vaaka : bool, valinnainen
+            Onko laiva vaaka- (True) vai pystysuunnassa (False).
+
+        Palauttaa 
+        ----------
+        pygame.Surface
+            Palauttaa pygame.Surface olion, johon keskiosa on piirretty.
+    """
     laiva = Surface(ruutukoko, SRCALPHA)
     x = 0
     y = 0
@@ -166,12 +241,39 @@ def keskiosa(ruutukoko:tuple, vari:tuple[int,int,int] | str, vaaka:bool = True) 
     return laiva
 
 def ohi(ruutukoko:tuple, vari:tuple[int,int,int]) -> Surface:
+    """ Piirretään ohi menneen ammuksen grafiikka.
+
+        Parametrit
+        ----------
+        ruutukoko : tuple
+            Pelitaulukon ruudun koko.
+
+        vari : tuple[int,int,int] | str
+            Käytettävä väri.
+
+        Palauttaa 
+        ----------
+        pygame.Surface
+            Palauttaa pygame.Surface olion, johon grafiikka on piirretty.
+    """
     ohi = Surface(ruutukoko, SRCALPHA)
     draw.ellipse(ohi, vari, (0, 0, ruutukoko[0], ruutukoko[1]), 2)
     draw.ellipse(ohi, vari, (ruutukoko[0] / 2 - 5, ruutukoko[1] / 2 - 5, 10, 10), 3)
     return ohi
 
 def osuma(ruutukoko:tuple) -> Surface:
+    """ Piirretään osuman grafiikka.
+
+        Parametrit
+        ----------
+        ruutukoko : tuple
+            Pelitaulukon ruudun koko.
+
+        Palauttaa 
+        ----------
+        pygame.Surface
+            Palauttaa pygame.Surface olion, johon grafiikka on piirretty.
+    """
     osuma = Surface(ruutukoko, SRCALPHA)
     draw.ellipse(osuma, (255,100,25), (0, 0, ruutukoko[0], ruutukoko[1]))
     draw.ellipse(osuma, (255,150,25), (ruutukoko[0] / 2 - 5, ruutukoko[1] / 2 - 5, 10, 10))
@@ -180,11 +282,50 @@ def osuma(ruutukoko:tuple) -> Surface:
 # Käyttöliittymä
 
 def teksti(teksti:str, vari:tuple[int,int,int] | str = (255,255,255), fontti:str = "Arial", fontti_koko:int = 20) -> Surface:
+    """ Luodaan käyttöliittymän teksti.
+
+        Parametrit
+        ----------
+        teksti : str
+            Näytettävä teksti.
+
+        vari : tuple[int,int,int] | str, valinnainen
+            Käytettävä väri.
+
+        fontti : str, valinnainen
+            Tekstin fontti.
+        
+        fontti_koko : int, valinnainen
+            Tekstin koko.
+            
+        Palauttaa 
+        ----------
+        pygame.Surface
+            Palauttaa pygame.Surface olion, johon teksti on piirretty.
+    """
     kirjoitus_fontti = font.SysFont(fontti, fontti_koko)
     kirjoitus = kirjoitus_fontti.render(teksti, True, vari)
     return kirjoitus
 
 def painike(koko:tuple, vari:tuple[int,int,int] | str, teksti:Surface | None = None) -> Surface:
+    """ Luodaan käyttöliittymän painike.
+
+        Parametrit
+        ----------
+        koko : tuple
+            Painikkeen koko (x, y)
+
+        vari : tuple[int,int,int] | str, valinnainen
+            Käytettävä väri.
+
+        teksti : pygame.Surface | None, valinnainen
+            Painikkeen teksti
+            
+        Palauttaa 
+        ----------
+        pygame.Surface
+            Palauttaa pygame.Surface olion, johon painike on piirretty.
+    """
     koko_x = koko[0]
     koko_y = koko[1]
     if teksti != None:

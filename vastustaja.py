@@ -15,6 +15,21 @@ class Vastustaja:
         self.ammuntojen_maara = 0
 
     def pelaa(self, pelialue:list, laivat:list[Laiva]) -> tuple[list, list]:
+        """ Suorittaa tekoälyn pelivuoron.
+
+        Parametrit
+        ----------
+        pelialue : list  
+            Tekoälyn vastustajan pelitaulukko. 
+
+        laivat : list[Laiva]
+            Laivataulukko, jossa tekoälyn vastustajan laivat.
+        
+        Palauttaa 
+        ----------
+        tuple[list,list]
+            Palauttaa muuttuneen pelitaulukon ja laivataulukon.
+        """
         yrita = True
         yrita_jarkevasti = 0
         ammunnan_tulos = ""
@@ -109,6 +124,23 @@ class Vastustaja:
         return pelialue, laivat, ammunnan_tulos
 
     def __tarkista_sopiiko_suurin_laiva(self, pelialue:list, x:int, y:int) -> bool:
+        """ Tarkistetaan voiko vastustajan suurin laiva olla annetuissa koordinaateissa.
+
+        Parametrit
+        ----------
+        pelialue : list
+            Tekoälyn vastustajan pelitaulukko. 
+
+        x : int
+            X-koordinaatti
+        y : int
+            Y-koordinaatti
+
+        Palauttaa 
+        ----------
+        bool
+            Palauttaa (True) jos laiva voi olla annetuissa koordinaateissa, muuten (False)
+        """
         perakkaiset_ruudut = 0
 
         if pelialue[y][x] not in [OHI]:
@@ -134,6 +166,22 @@ class Vastustaja:
         return False
 
     def __valitse_ymparilta(self, pelialue:list, x:int, y:int) -> list:
+        """ Valitsee ja palauttaa annetun koordinaatin viereiset ruudut, jos niihin ei ole vielä ammuttu.
+
+        Parametrit
+        ----------
+        pelialue : list
+            Tekoälyn vastustajan pelitaulukko. 
+        x : int
+            X-koordinaatti
+        y : int
+            Y-koordinaatti
+
+        Palauttaa 
+        ----------
+        list
+            Palautetaan sopivat koordinaatit
+        """
         mahdolliset_kohteet = []
         if self.laiva_vaaka == None or self.laiva_vaaka == False:
             if y - 1 >= 0:
@@ -152,6 +200,21 @@ class Vastustaja:
         return mahdolliset_kohteet
 
     def __tarkista_kohteet(self, kohteet:list, laivat:list[Laiva]) -> list:
+        """ Tällä tarkistetaan, ovatko annetut kohteet laivan päällä ja onko niihin jo osuttu.
+
+        Parametrit
+        ----------
+        kohteet : list
+            Tekoälyn valitsemat kohteet. 
+        
+        laivat : list[Laiva]
+            Vastustajan laivataulukko.
+
+        Palauttaa 
+        ----------
+        list
+            Palauttaa listan, josta on poistettu epäsopivat kohteet.
+        """
         for kohde in kohteet:
             for laiva in laivat:
                 if kohde in laiva.osumat:
@@ -160,6 +223,7 @@ class Vastustaja:
         return kohteet
 
     def __lopeta_metsastys(self) -> None:
+        """ Palauttaa tekoälyn takaisin satunnaiseen osuman hakuun"""
         self.viimeisin_osuma = ()
         self.laiva_tuhottu = True
         self.laiva_vaaka = None
