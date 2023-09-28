@@ -5,13 +5,7 @@ from laiva import Laiva
 from grafiikka import ohi, teksti, painike
 from vastustaja import Vastustaja
 
-OHI = -1
-OSUMA = -2
-TYHJA = 0
-
-LAIVA_1 = 1
-LAIVA_2 = 2
-LAIVA_3 = 3
+from pelin_vakiot import *
 
 def peli():
     pygame.init()
@@ -108,12 +102,13 @@ def peli():
                 pelaaja_sanoo = teksti(f"Pelaaja: {vastustajan_ammuksen_tulos}")
                 naytto.blit(pelaaja_sanoo, (marginaali + pelaajan_kentta.width / 2 - pelaaja_sanoo.get_width() / 2, naytto.get_height() - 150))
 
-            teksti_pelaaja = teksti("Pelaajan laivat")
+            teksti_pelaaja = teksti(f"Pelaajan laivat: {laivoja_jaljella(p_laivat)[0]}")
             naytto.blit(teksti_pelaaja, (marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
 
             vastustajan_kentta = naytto.blit(vastustajan_kentta, (naytto.get_width() - vastustajan_kentta.get_width() - marginaali, naytto.get_height() / 2 - vastustajan_kentta.get_height() / 2))
 
-            teksti_vastustaja = teksti("Vastustajan laivat")
+            laivat = laivoja_jaljella(v_laivat)
+            teksti_vastustaja = teksti(f"Vastustajan laivat: {laivat[0]} kpl, Koot: {str(laivat[1])}")
             naytto.blit(teksti_vastustaja, (naytto.get_width() - teksti_vastustaja.get_width() - marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
 
         # Tapahtumien käsittely
@@ -370,25 +365,21 @@ def tarkista_voitto(laivat:list[Laiva]) -> bool:
             return False
     return True
 
-# Funktio, joka hoitaa vastustajan tekemiset
-# def vastustaja_pelaa(laivataulukko:list, laivat:list[Laiva]) -> tuple[list,tuple]:
-#     yrita = True
-#     while yrita:
-#         x = random.randint(0, len(laivataulukko[0]) - 1)
-#         y = random.randint(0, len(laivataulukko) - 1)
-#         if laivataulukko[y][x] not in [OHI, OSUMA, TYHJA]:
-#             for laiva in laivat:
-#                 if laivataulukko[y][x] == laiva.nimi:
-#                     if laiva.osuma(x,y):
-#                         print("vastustaja osuma")
-#                         yrita = False
-                        
-#         elif laivataulukko[y][x] in [TYHJA]:
-#             laivataulukko[y][x] = OHI
-#             print("vastustaja ohi")
-#             yrita = False
+def laivoja_jaljella(laivat:list[Laiva]) -> tuple[int, list]:
+    laivoja = 0
+    koot_jaljella = []
+    for laiva in laivat:
+        if laiva.tuhottu == False:
+            laivoja += 1
+            if laiva.pituus not in koot_jaljella:
+                koot_jaljella.append(laiva.pituus)
+    koot = ""
+    for i in range(len(koot_jaljella)):
+        koot += str(koot_jaljella[i])
+        if i < len(koot_jaljella) - 1:
+            koot += ", "
 
-#     return laivataulukko
+    return laivoja, koot
 
 if __name__ == "__main__":
     peli()

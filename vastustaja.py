@@ -1,6 +1,8 @@
 import random
 from laiva import Laiva
 
+from pelin_vakiot import *
+
 class Vastustaja:
     def __init__(self) -> None:
         self.viimeisin_osuma = ()
@@ -14,8 +16,6 @@ class Vastustaja:
 
     def pelaa(self, pelialue:list, laivat:list[Laiva]) -> tuple[list, list]:
         yrita = True
-        OHI = -1
-        TYHJA = 0
         yrita_jarkevasti = 0
         ammunnan_tulos = ""
 
@@ -109,7 +109,6 @@ class Vastustaja:
         return pelialue, laivat, ammunnan_tulos
 
     def __tarkista_sopiiko_suurin_laiva(self, pelialue:list, x:int, y:int) -> bool:
-        OHI = -1
         perakkaiset_ruudut = 0
 
         if pelialue[y][x] not in [OHI]:
@@ -135,7 +134,6 @@ class Vastustaja:
         return False
 
     def __valitse_ymparilta(self, pelialue:list, x:int, y:int) -> list:
-        OHI = -1
         mahdolliset_kohteet = []
         if self.laiva_vaaka == None or self.laiva_vaaka == False:
             if y - 1 >= 0:

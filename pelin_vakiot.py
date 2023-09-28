@@ -1,0 +1,7 @@
+OHI = -1
+OSUMA = -2
+TYHJA = 0
+
+LAIVA_1 = 1
+LAIVA_2 = 2
+LAIVA_3 = 3
