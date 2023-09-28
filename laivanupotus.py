@@ -55,6 +55,8 @@ def peli():
     vastustajan_vuoro = False
     voitto = False
     havio = False
+    pelaajan_ammuksen_tulos = ""
+    vastustajan_ammuksen_tulos = ""
 
     # Ajastimia
     hidasta_vastustaja = 0
@@ -75,6 +77,8 @@ def peli():
         pelaajan_kentta = piirra_pelialue(pelaajan_pelialue, p_laivat, pelialue_koko, pelialue_vari)
         pelaajan_kentta = naytto.blit(pelaajan_kentta, (marginaali, naytto.get_height() / 2 - pelaajan_kentta.get_height() / 2))
         
+        vastustajan_kentta = piirra_pelialue(vastustajan_pelialue, v_laivat, pelialue_koko, pelialue_vari, False)
+
         if asetustila == True:
             teksti_pelaaja = teksti("Aseta laivasi")
             naytto.blit(teksti_pelaaja,(marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
@@ -99,10 +103,14 @@ def peli():
                     teksti_tietoja = teksti("Pelaajan vuoro...")
                 naytto.blit(teksti_tietoja, (naytto.get_width() / 2 - teksti_tietoja.get_width() / 2, naytto.get_height() - 150))
 
+                vastustaja_sanoo = teksti(f"Vastustaja: {pelaajan_ammuksen_tulos}")
+                naytto.blit(vastustaja_sanoo, (naytto.get_width() - vastustajan_kentta.get_width() / 2 - vastustaja_sanoo.get_width() / 2 - marginaali, naytto.get_height() - 150))
+                pelaaja_sanoo = teksti(f"Pelaaja: {vastustajan_ammuksen_tulos}")
+                naytto.blit(pelaaja_sanoo, (marginaali + pelaajan_kentta.width / 2 - pelaaja_sanoo.get_width() / 2, naytto.get_height() - 150))
+
             teksti_pelaaja = teksti("Pelaajan laivat")
             naytto.blit(teksti_pelaaja, (marginaali, naytto.get_height() / 2 - pelialue_koko[1] / 2 - teksti_pelaaja.get_height()))
 
-            vastustajan_kentta = piirra_pelialue(vastustajan_pelialue, v_laivat, pelialue_koko, pelialue_vari, False)
             vastustajan_kentta = naytto.blit(vastustajan_kentta, (naytto.get_width() - vastustajan_kentta.get_width() - marginaali, naytto.get_height() / 2 - vastustajan_kentta.get_height() / 2))
 
             teksti_vastustaja = teksti("Vastustajan laivat")
@@ -136,7 +144,9 @@ def peli():
                         pelaajan_pelialue = pelitaulukon_alustus(20,20)
                         vastustajan_pelialue = pelitaulukon_alustus(20,20)
                         aseta_laivat_satunnainen(vastustajan_pelialue, v_laivat)
-
+                        pelaajan_ammuksen_tulos = ""
+                        vastustajan_ammuksen_tulos = ""
+                        
                         vastustaja = Vastustaja()
                         break
 
@@ -170,7 +180,10 @@ def peli():
                             for laiva in v_laivat:
                                 if vastustajan_pelialue[y][x] == laiva.nimi:
                                     if laiva.osuma(x,y):
+                                        pelaajan_ammuksen_tulos = "Osuma"
                                         print("Osuma")
+                                        if laiva.tuhottu:
+                                            pelaajan_ammuksen_tulos = "Upotus"
                                     else:
                                         print("Ei voi klikata tähän")
                                         vaihda_vuoro = False
@@ -181,6 +194,7 @@ def peli():
 
                             if vastustajan_pelialue[y][x] == TYHJA:
                                 vastustajan_pelialue[y][x] = OHI
+                                pelaajan_ammuksen_tulos = "Ohi"
                                 print("Huti")
                             if vaihda_vuoro:
                                 vastustajan_vuoro = True
@@ -199,7 +213,7 @@ def peli():
         if vastustajan_vuoro and voitto == False and havio == False:
             if hidasta_vastustaja <= 0: 
                 #pelaajan_pelialue, v_osuma_koordinaatit = vastustaja_pelaa(pelaajan_pelialue, p_laivat)
-                pelaajan_pelialue, p_laivat = vastustaja.pelaa(pelaajan_pelialue, p_laivat)
+                pelaajan_pelialue, p_laivat, vastustajan_ammuksen_tulos = vastustaja.pelaa(pelaajan_pelialue, p_laivat)
                 #print(f"vastustaja osuma: {v_osuma_koordinaatit}")
                 if tarkista_voitto(p_laivat):
                     print("Häviö!!!")

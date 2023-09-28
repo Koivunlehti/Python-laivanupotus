@@ -17,6 +17,7 @@ class Vastustaja:
         OHI = -1
         TYHJA = 0
         yrita_jarkevasti = 0
+        ammunnan_tulos = ""
 
         # Suurin laiva jäljellä
         suurin_laiva = 1
@@ -79,6 +80,7 @@ class Vastustaja:
                     if pelialue[y][x] == laiva.nimi:
                         if laiva.osuma(x,y):
                             print("vastustaja osuma")
+                            ammunnan_tulos = "Osuma"
                             if laiva.tuhottu != True:
                                 if len(self.ensimmainen_osuma) == 0:
                                     self.ensimmainen_osuma = (x, y)
@@ -91,6 +93,7 @@ class Vastustaja:
                                 self.viimeisin_osuma = (x, y)
                                 self.laiva_tuhottu = False
                             else:
+                                ammunnan_tulos = "Upotus"
                                 self.__lopeta_metsastys()
                             yrita = False
                             self.ammuntojen_maara += 1
@@ -98,11 +101,12 @@ class Vastustaja:
             elif pelialue[y][x] in [TYHJA]:
                 pelialue[y][x] = OHI
                 print("vastustaja ohi")
+                ammunnan_tulos = "Ohi"
                 yrita = False
                 self.ammuntojen_maara += 1
 
         print(f"vastustaja ampunut {self.ammuntojen_maara} kertaa")
-        return pelialue, laivat
+        return pelialue, laivat, ammunnan_tulos
 
     def __tarkista_sopiiko_suurin_laiva(self, pelialue:list, x:int, y:int) -> bool:
         OHI = -1
